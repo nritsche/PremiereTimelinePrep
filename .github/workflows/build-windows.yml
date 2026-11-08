@@ -1,0 +1,53 @@
+name: Build Windows executable
+
+on:
+  push:
+    branches: [main, master]
+    tags: ["v*"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test-and-build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install media tools
+        shell: pwsh
+        run: choco install ffmpeg exiftool -y --no-progress
+      - name: Locate media tools
+        id: media-tools
+        shell: pwsh
+        run: |
+          $chocoLib = Join-Path $env:ChocolateyInstall 'lib'
+          $ffprobe = Get-ChildItem $chocoLib -Filter 'ffprobe.exe' -Recurse -ErrorAction SilentlyContinue | Select-Object -First 1
+          $exiftool = Get-ChildItem $chocoLib -Filter 'exiftool(-k).exe' -Recurse -ErrorAction SilentlyContinue | Select-Object -First 1
+          if (-not $exiftool) {
+            $exiftool = Get-ChildItem $chocoLib -Filter 'exiftool.exe' -Recurse -ErrorAction SilentlyContinue | Select-Object -First 1
+          }
+          if (-not $ffprobe) { throw 'FFprobe was not found in the installed ffmpeg package.' }
+          if (-not $exiftool) { throw 'ExifTool executable was not found in the installed package.' }
+          "ffprobe=$($ffprobe.FullName)" >> $env:GITHUB_OUTPUT
+          "exiftool=$($exiftool.FullName)" >> $env:GITHUB_OUTPUT
+      - name: Install application and build dependencies
+        run: python -m pip install --upgrade pip && python -m pip install -e ".[gui,dev]"
+      - name: Run tests
+        run: python -m pytest -q
+      - name: Build standalone executable
+        run: >-
+          python scripts/build_windows.py
+          --ffprobe "${{ steps.media-tools.outputs.ffprobe }}"
+          --exiftool "${{ steps.media-tools.outputs.exiftool }}"
+      - name: Upload executable
+        uses: actions/upload-artifact@v4
+        with:
+          name: PremiereTimelinePrep-windows-x64
+          path: dist/PremiereTimelinePrep.exe
+          if-no-files-found: error
