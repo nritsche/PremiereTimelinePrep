@@ -1,4 +1,5 @@
 from datetime import datetime, timezone
+from pathlib import Path
 import xml.etree.ElementTree as ET
 
 import pytest
@@ -8,7 +9,7 @@ from app.models.video_file import TimestampCandidate, VideoFile
 
 
 def clip(name, rate=25, duration=2, audio=True):
-    return VideoFile('/media/' + name, name, 100, duration_seconds=duration,
+    return VideoFile(str(Path('media', name).resolve()), name, 100, duration_seconds=duration,
                      width=1920, height=1080, frame_rate=rate,
                      audio_codec='aac' if audio else None,
                      metadata={'ffprobe.audio_channels': 2, 'ffprobe.audio_sample_rate': 48000})
@@ -24,7 +25,8 @@ def test_linked_assembly_paths_order_exclusion_and_mixed_rates(tmp_path):
     root = ET.parse(path).getroot()
     items = root.findall('./sequence/media/video/track/clipitem')
     assert [item.findtext('name') for item in items] == [first.filename, second.filename]
-    assert items[0].findtext('file/pathurl') == 'file:///media/caf%C3%A9%20%26%20one.mov'
+    assert items[0].findtext('file/pathurl') == Path(first.path).as_uri()
+    assert items[0].findtext('file/pathurl').endswith('/caf%C3%A9%20%26%20one.mov')
     assert [(item.findtext('start'), item.findtext('end')) for item in items] == [('0', '50'), ('50', '75')]
     assert items[1].findtext('out') == '30'
     assert items[1].findtext('rate/ntsc') == 'TRUE'
@@ -36,12 +38,12 @@ def test_linked_assembly_paths_order_exclusion_and_mixed_rates(tmp_path):
 
 def test_missing_metadata_does_not_overwrite_existing_xml(tmp_path):
     path = tmp_path / 'timeline.xml'
-    path.write_text('keep')
+    path.write_text('keep', encoding='utf-8')
     bad = clip('bad.mov')
     bad.duration_seconds = None
     with pytest.raises(ValueError, match='duration'):
         write_timeline_xml(path, [bad])
-    assert path.read_text() == 'keep'
+    assert path.read_text(encoding='utf-8') == 'keep'
     with pytest.raises(ValueError, match='Include'):
         write_timeline_xml(path, [bad], excluded_paths=[bad.path])
 
