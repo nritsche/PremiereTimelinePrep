@@ -42,3 +42,36 @@ def test_failed_export_preserves_existing_report(tmp_path):
         write_session_report(path, [clip])
     assert path.read_text() == "previous report"
     assert list(tmp_path.iterdir()) == [path]
+
+
+def test_session_round_trip_restores_corrections_and_exclusions(tmp_path):
+    from app.core.session_report import read_session_report
+    original = TimestampCandidate("embedded", "original", datetime(2026, 1, 1, tzinfo=timezone.utc), .8)
+    video = VideoFile("/offline/clip.mov", "clip.mov", 10, camera="Camera A",
+                      timestamp_candidates=[original], selected_timestamp=original)
+    apply_offset(video, timedelta(seconds=15))
+    path = tmp_path / "session.json"
+    write_session_report(path, [video], excluded_paths=[video.path], folders=["/offline"])
+    videos, excluded, folders = read_session_report(path)
+    assert videos == [video]
+    assert excluded == {video.path}
+    assert folders == ["/offline"]
+
+
+@pytest.mark.parametrize("mutation", [
+    lambda report: report.update(schema_version=2),
+    lambda report: report.update(folders="not a list"),
+    lambda report: report["videos"][0].update(included="false"),
+    lambda report: report["videos"].append(report["videos"][0]),
+    lambda report: report["videos"][0].update(filesystem_modified="2026-01-01T00:00:00"),
+    lambda report: report["videos"][0].update(timestamp_candidates=[None]),
+])
+def test_reject_invalid_sessions(tmp_path, mutation):
+    from app.core.session_report import read_session_report
+    path = tmp_path / "session.json"
+    write_session_report(path, [VideoFile("/clip.mov", "clip.mov", 10)])
+    payload = json.loads(path.read_text())
+    mutation(payload)
+    path.write_text(json.dumps(payload))
+    with pytest.raises(ValueError):
+        read_session_report(path)

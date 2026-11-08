@@ -14,7 +14,7 @@ Premiere Timeline Prep prepares footage metadata and recording-time order for an
 - Shows full candidate and warning details for the selected clip. Missing FFprobe/ExifTool are presented as setup notices, rather than repeated clip timestamp warnings.
 - Allows individual time overrides, manual source assignment, and camera-group offsets or reference-time corrections during the current scan session.
 - Exports JSON audit reports with raw metadata, original timestamp candidates, corrected selections, and inclusion flags; CSV inventories list clips chronologically with unknown times last. Reports include all scanned clips regardless of search filters.
-- Preserves clip inclusion choices when timestamps or camera groups change. Reports are exports for review; reopening saved sessions is not implemented yet.
+- Preserves clip inclusion choices when timestamps or camera groups change. Open a JSON report with “Open session…” to restore footage review, camera groups, corrections, and inclusion choices without rescanning. Unavailable media paths are reported after opening; CSV files are review inventories and cannot be reopened as sessions.
 
 The selection policy is deliberately visible in `app/core/timestamp_resolver.py`. Camera vendors use inconsistent QuickTime conventions, and a timestamp alone cannot establish a camera's timezone. Review warnings and raw candidates before applying corrections.
 

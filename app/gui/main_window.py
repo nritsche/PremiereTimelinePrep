@@ -12,7 +12,7 @@ from PySide6.QtWidgets import (QAbstractItemView, QCheckBox, QDateTimeEdit,
                                QVBoxLayout, QWidget)
 
 from app.core.scanner import DEFAULT_EXTENSIONS
-from app.core.session_report import write_session_report
+from app.core.session_report import read_session_report, write_session_report
 from app.core.timestamp_corrector import apply_offset, override_timestamp, set_reference_time
 from app.gui.camera_correction_dialog import CameraCorrectionDialog
 from app.gui.scan_worker import ScanWorker
@@ -163,6 +163,8 @@ class MainWindow(QMainWindow):
         self.progress.setTextVisible(False)
         self.progress.hide()
         footer.addWidget(self.progress)
+        self.open_session_button = QPushButton("Open session…")
+        footer.addWidget(self.open_session_button)
         self.export_report_button = QPushButton("Export report…")
         self.export_report_button.setEnabled(False)
         footer.addWidget(self.export_report_button)
@@ -196,6 +198,7 @@ class MainWindow(QMainWindow):
         self.add_folder_button.clicked.connect(self._add_folder)
         self.remove_folder_button.clicked.connect(self._remove_folders)
         self.scan_button.clicked.connect(self._start_scan)
+        self.open_session_button.clicked.connect(self._open_session)
         self.export_report_button.clicked.connect(self._export_report)
         self.table.itemChanged.connect(self._include_changed)
         self.search_field.textChanged.connect(self._filter_rows)
@@ -229,6 +232,7 @@ class MainWindow(QMainWindow):
         if not extensions:
             QMessageBox.information(self, "Select formats", "Choose at least one supported video format.")
             return
+        self.open_session_button.setEnabled(False)
         self.scan_button.setEnabled(False)
         self.export_report_button.setEnabled(False)
         self.add_folder_button.setEnabled(False)
@@ -268,6 +272,7 @@ class MainWindow(QMainWindow):
             self.setup_notice.hide()
         self._populate_table(videos)
         self.progress.hide()
+        self.open_session_button.setEnabled(True)
         self.scan_button.setEnabled(True)
         self.add_folder_button.setEnabled(True)
         self.remove_folder_button.setEnabled(True)
@@ -329,6 +334,23 @@ class MainWindow(QMainWindow):
             self.excluded_paths.discard(path)
         else:
             self.excluded_paths.add(path)
+
+    def _open_session(self):
+        path, _ = QFileDialog.getOpenFileName(self, "Open session", "", "JSON session report (*.json)")
+        if not path:
+            return
+        try:
+            videos, excluded, folders = read_session_report(path)
+        except (OSError, ValueError) as exc:
+            QMessageBox.warning(self, "Session could not be opened", str(exc))
+            return
+        self.excluded_paths = excluded
+        self.folder_list.clear()
+        self.folder_list.addItems(folders)
+        self._scan_completed(videos)
+        missing = sum(not os.path.isfile(video.path) for video in videos)
+        self.status_label.setText("Opened {} clips from session{}".format(
+            len(videos), " · {} media files unavailable at saved paths".format(missing) if missing else ""))
 
     def _export_report(self):
         path, selected_filter = QFileDialog.getSaveFileName(
