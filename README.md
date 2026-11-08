@@ -1,6 +1,6 @@
 # Premiere Timeline Prep
 
-Premiere Timeline Prep prepares footage metadata and recording-time order for an Adobe Premiere Pro edit. The first implementation stage provides a Python 3.11+ metadata and timestamp engine; the GUI, interchange generation, session reports, and Windows packaging are subsequent stages.
+Premiere Timeline Prep prepares footage metadata and recording-time order for an Adobe Premiere Pro edit. The current GUI supports folder selection, background scanning, readable timestamp review, individual timestamp overrides, manual camera grouping, and camera-group time corrections. Session reports can be exported as JSON or CSV. Premiere interchange generation is a subsequent stage.
 
 ## Current capabilities
 
@@ -10,6 +10,11 @@ Premiere Timeline Prep prepares footage metadata and recording-time order for an
 - Prefers explicit recording dates, then creation dates, then filename dates, and finally weak filesystem times. Filesystem creation/modification dates are weak because copying changes them. Naive camera timestamps are interpreted as UTC by default; this is configurable for callers. An explicit offset is honored and normalized to UTC.
 - Flags sentinel dates, out-of-range dates, and conflicting embedded date fields without discarding them.
 - Provides camera-group time offsets, reference-clip correction, and per-clip override primitives.
+- Includes a PySide6 folder selection and asynchronous scan window with searchable, sortable metadata review.
+- Shows full candidate and warning details for the selected clip. Missing FFprobe/ExifTool are presented as setup notices, rather than repeated clip timestamp warnings.
+- Allows individual time overrides, manual source assignment, and camera-group offsets or reference-time corrections during the current scan session.
+- Exports JSON audit reports with raw metadata, original timestamp candidates, corrected selections, and inclusion flags; CSV inventories list clips chronologically with unknown times last. Reports include all scanned clips regardless of search filters.
+- Preserves clip inclusion choices when timestamps or camera groups change. Reports are exports for review; reopening saved sessions is not implemented yet.
 
 The selection policy is deliberately visible in `app/core/timestamp_resolver.py`. Camera vendors use inconsistent QuickTime conventions, and a timestamp alone cannot establish a camera's timezone. Review warnings and raw candidates before applying corrections.
 
