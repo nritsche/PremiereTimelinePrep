@@ -58,10 +58,32 @@ def test_video_only_and_fractional_timing(tmp_path):
     videos = [clip(str(i)+'.mov', 24000/1001, 1, audio=False) for i in range(100)]
     write_timeline_xml(path, videos)
     root = ET.parse(path).getroot()
-    assert root.findtext('./sequence/duration') == '2400'
+    assert root.findtext('./sequence/duration') == '2398'
     assert not root.findall('./sequence/media/audio/track')
 
 
-def test_nonstandard_average_rate_is_explicitly_rejected(tmp_path):
-    with pytest.raises(ValueError, match='Unsupported frame rate'):
-        write_timeline_xml(tmp_path / 'timeline.xml', [clip('variable.mov', 12.457627118644067)])
+def test_nonstandard_rates_are_disclosed_and_preserve_elapsed_time(tmp_path):
+    from app.core.xml_exporter import timeline_rate, timeline_rate_notices
+    odd = clip('variable.mov', 12.457627118644067, 11.8, audio=False)
+    odd.selected_timestamp = TimestampCandidate('test', '', datetime(2026, 1, 1, tzinfo=timezone.utc), 1)
+    odd.metadata['ffprobe.r_frame_rate'] = '100/1'
+    rate, notice = timeline_rate(odd)
+    assert float(rate[2]) == 12
+    assert '12.457627' in notice
+    assert not timeline_rate_notices([odd], [odd.path])
+    phone = clip('phone.mov', 30.015175, 89.5547)
+    phone.metadata['ffprobe.r_frame_rate'] = '30/1'
+    assert float(timeline_rate(phone)[0][2]) == 30
+    path = tmp_path / 'timeline.xml'
+    write_timeline_xml(path, [odd, phone])
+    root = ET.parse(path).getroot()
+    assert int(root.findtext('./sequence/duration')) == round((11.8 + 89.5547) * 12)
+    assert 'variable.mov' in root.findtext('./sequence/logginginfo/lognote')
+    items = root.findall('./sequence/media/video/track/clipitem')
+    assert items[0].findtext('end') == items[1].findtext('start')
+
+
+@pytest.mark.parametrize('rate', [None, 0, float('nan'), float('inf'), -1, 300])
+def test_invalid_rate_cannot_export(tmp_path, rate):
+    with pytest.raises(ValueError):
+        write_timeline_xml(tmp_path / 'timeline.xml', [clip('invalid.mov', rate)])

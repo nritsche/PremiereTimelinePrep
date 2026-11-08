@@ -11,7 +11,7 @@ from PySide6.QtWidgets import (QAbstractItemView, QCheckBox, QDateTimeEdit,
                                QTableWidget, QTableWidgetItem, QPlainTextEdit,
                                QVBoxLayout, QWidget)
 
-from app.core.xml_exporter import write_timeline_xml
+from app.core.xml_exporter import timeline_rate_notices, write_timeline_xml
 from app.core.scanner import DEFAULT_EXTENSIONS
 from app.core.session_report import read_session_report, write_session_report
 from app.core.timestamp_corrector import apply_offset, override_timestamp, set_reference_time
@@ -361,6 +361,20 @@ class MainWindow(QMainWindow):
             len(videos), " · {} media files unavailable at saved paths".format(missing) if missing else ""))
 
     def _export_xml(self):
+        try:
+            notices = timeline_rate_notices(self.videos, self.excluded_paths)
+        except (ValueError, TypeError) as exc:
+            QMessageBox.warning(self, "XML could not be exported", str(exc))
+            return
+        if notices:
+            answer = QMessageBox.warning(
+                self, "Approximate frame timing",
+                "These clips need an approximate XML timebase. Media is not converted. "
+                "Check playback and audio sync after importing in Premiere.\n\n" + "\n".join(notices)
+                + "\n\nExport with these timebases?",
+                QMessageBox.Yes | QMessageBox.Cancel, QMessageBox.Cancel)
+            if answer != QMessageBox.Yes:
+                return
         path, _ = QFileDialog.getSaveFileName(self, "Export experimental Premiere timeline", "timeline.xml", "Final Cut Pro 7 XML (*.xml)")
         if not path:
             return

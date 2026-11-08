@@ -74,7 +74,11 @@ def extract_video(path: str, ffprobe: Optional[str] = None, exiftool: Optional[s
         if stream.get("codec_type") == "video" and video.video_codec is None:
             video.video_codec = stream.get("codec_name")
             video.width, video.height = stream.get("width"), stream.get("height")
-            rate = stream.get("avg_frame_rate") or stream.get("r_frame_rate")
+            video.metadata["ffprobe.avg_frame_rate"] = stream.get("avg_frame_rate")
+            video.metadata["ffprobe.r_frame_rate"] = stream.get("r_frame_rate")
+            rate = stream.get("avg_frame_rate")
+            if not rate or rate == "0/0":
+                rate = stream.get("r_frame_rate")
             try:
                 numerator, denominator = rate.split("/")
                 video.frame_rate = float(numerator) / float(denominator) if float(denominator) else None

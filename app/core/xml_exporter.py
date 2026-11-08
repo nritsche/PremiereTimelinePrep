@@ -20,6 +20,42 @@ def _rate(value):
     raise ValueError("Unsupported frame rate: {}".format(value))
 
 
+def timeline_rate(video):
+    """Return an XML-representable timebase plus an explicit approximation notice.
+
+    r_frame_rate is a guess, so only prefer it when close to the average.
+    Otherwise use the nearest standard rate within 1%, or nearest integer.
+    This describes elapsed time; it does not convert VFR media to CFR.
+    """
+    average = video.frame_rate
+    if not average or not math.isfinite(average) or average < 1 or average > 240:
+        raise ValueError("{}: frame rate must be between 1 and 240 fps".format(video.filename))
+    try:
+        return _rate(average), None
+    except ValueError:
+        pass
+    chosen = None
+    try:
+        nominal = float(Fraction(video.metadata.get("ffprobe.r_frame_rate", "0/1")))
+        if abs(nominal - average) / average <= .02:
+            chosen = _rate(nominal)
+    except (ValueError, TypeError, ZeroDivisionError):
+        pass
+    if chosen is None:
+        standards = [Fraction(rate) for rate in (12, 15, 24, 25, 30, 48, 50, 60, 100, 120, 240)]
+        standards += [Fraction(base * 1000, 1001) for base in (24, 30, 60, 120)]
+        nearest = min(standards, key=lambda value: abs(float(value) - average))
+        chosen = _rate(float(nearest) if abs(float(nearest) - average) / average <= .01 else round(average))
+    notice = "{}: reported {:.6f} fps; XML uses {:.6f} fps. Variable/nonstandard timing is approximate; verify playback and audio sync in Premiere.".format(video.filename, average, float(chosen[2]))
+    return chosen, notice
+
+
+def timeline_rate_notices(videos, excluded_paths=()):
+    excluded = set(excluded_paths)
+    return [notice for video in videos if video.path not in excluded
+            for _, notice in [timeline_rate(video)] if notice]
+
+
 def _text(parent, name, value):
     child = ET.SubElement(parent, name)
     child.text = str(value)
@@ -50,7 +86,7 @@ def write_timeline_xml(path, videos, *, excluded_paths=(), name="Chronological f
             raise ValueError("{}: video dimensions are missing; rescan with FFprobe".format(video.filename))
         if not Path(video.path).is_absolute():
             raise ValueError("Media paths must be absolute")
-        rates.append(_rate(video.frame_rate))
+        rates.append(timeline_rate(video)[0])
         if video.audio_codec and not video.metadata.get("ffprobe.audio_channels"):
             raise ValueError("{}: audio channel details are missing; rescan before XML export".format(video.filename))
     root = ET.Element("xmeml", version="5")
@@ -72,8 +108,12 @@ def write_timeline_xml(path, videos, *, excluded_paths=(), name="Chronological f
     for index, (video, rate) in enumerate(zip(clips, rates), 1):
         source_frames = max(1, round(Fraction(str(video.duration_seconds)) * rate[2]))
         start = round(elapsed * sequence_rate[2])
-        elapsed += Fraction(source_frames, 1) / rate[2]
+        elapsed += Fraction(str(video.duration_seconds))
         end = max(start + 1, round(elapsed * sequence_rate[2]))
+        if index > 1:
+            start = previous_end
+            end = max(start + 1, end)
+        previous_end = end
         channels = int(video.metadata.get("ffprobe.audio_channels", 0)) if video.audio_codec else 0
         if channels < 0 or channels > 32:
             raise ValueError("Unsupported audio channel count")
@@ -113,6 +153,9 @@ def write_timeline_xml(path, videos, *, excluded_paths=(), name="Chronological f
                 _text(link, "trackindex", max(1, linked_channel))
                 _text(link, "clipindex", index if linked_channel == 0 else sum(1 for prev in clips[:index] if prev.audio_codec and int(prev.metadata.get("ffprobe.audio_channels", 0)) >= linked_channel))
     _text(sequence, "duration", end)
+    notices = timeline_rate_notices(clips)
+    if notices:
+        _text(ET.SubElement(sequence, "logginginfo"), "lognote", "\n".join(notices))
     ET.indent(root)
     data = b'<?xml version="1.0" encoding="utf-8"?>\n<!DOCTYPE xmeml>\n' + ET.tostring(root, encoding="utf-8")
     temporary = None
