@@ -82,6 +82,8 @@ def extract_video(path: str, ffprobe: Optional[str] = None, exiftool: Optional[s
                 pass
         elif stream.get("codec_type") == "audio" and video.audio_codec is None:
             video.audio_codec = stream.get("codec_name")
+            video.metadata["ffprobe.audio_channels"] = stream.get("channels")
+            video.metadata["ffprobe.audio_sample_rate"] = stream.get("sample_rate") or 48000
         tags = stream.get("tags", {})
         video.metadata.update({"ffprobe.stream.{}".format(k): v for k, v in tags.items()})
     try:

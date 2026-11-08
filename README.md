@@ -1,6 +1,6 @@
 # Premiere Timeline Prep
 
-Premiere Timeline Prep prepares footage metadata and recording-time order for an Adobe Premiere Pro edit. The current GUI supports folder selection, background scanning, readable timestamp review, individual timestamp overrides, manual camera grouping, and camera-group time corrections. Session reports can be exported as JSON or CSV. Premiere interchange generation is a subsequent stage.
+Premiere Timeline Prep prepares footage metadata and recording-time order for an Adobe Premiere Pro edit. The current GUI supports folder selection, background scanning, readable timestamp review, individual timestamp overrides, manual camera grouping, and camera-group time corrections. Session reports can be exported as JSON or CSV. Experimental Premiere XML timeline export is available for import testing.
 
 ## Current capabilities
 
@@ -42,4 +42,16 @@ python scripts/build_windows.py --ffprobe C:\path\to\ffprobe.exe --exiftool C:\p
 
 ## Premiere interchange status
 
-No Premiere compatibility claim is made yet. The XML generator is intentionally not implemented until its xmeml structure can be checked against reliable Premiere import requirements. XML unit tests alone cannot prove Premiere compatibility. Before release, follow the manual Premiere integration procedure to open an exported project and inspect both the Project panel and timeline. The initial path policy will use absolute media paths; moving media after generation will require relinking.
+Use **Export XML…** after scanning with FFprobe installed. Included clips are placed back-to-back in capture-time order, with unknown capture times last. Search filters do not change inclusion. The first included clip sets the sequence frame rate and dimensions; source rates are retained and positions use sequence frames. Embedded audio channels are exported on linked audio tracks. No media is copied or transcoded.
+
+Export uses Final Cut Pro 7 `xmeml` version 5, based on [Apple’s encoding documentation](https://developer.apple.com/library/archive/documentation/AppleApplications/Reference/FinalCutPro_XML/Basics/Basics.html). This is distinct from Final Cut Pro X `.fcpxml`, which [Premiere cannot directly import](https://helpx.adobe.com/ca/premiere/desktop/organize-media/import-files/migrate-from-final-cut-pro-x.html).
+
+This exporter is experimental. Automated checks verify XML structure and timing but do not prove Premiere compatibility. Audio channel details require a fresh scan if the session predates XML export. Missing durations, dimensions, unsupported rates, and missing audio channel details block export rather than silently omit media. Variable-frame-rate footage uses its reported average rate and requires particular attention during import review. Paths are absolute file URLs: moving files or importing on another computer requires relinking.
+
+### Manual Premiere integration check
+
+1. Scan a small sample with at least two clips, including audio; export XML. Include mixed frame rates and a filename with spaces or accented characters when available.
+2. In Premiere, create a test project and use File > Import to select the XML. Record the Premiere version and any import warnings.
+3. Confirm the Project panel contains the expected media and sequence. Open the sequence and check clip order, excluded clips, sequence settings, and media links.
+4. Play the first and last seconds of each clip. Check picture, all audio channels, linked video/audio selection, clip boundaries, and sync, especially for mixed or variable frame rates.
+5. Compare timeline duration with the included footage duration, allowing frame rounding. Save, reopen, and verify again. Keep this checklist incomplete until tested in Premiere.

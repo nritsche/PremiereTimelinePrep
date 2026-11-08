@@ -11,6 +11,7 @@ from PySide6.QtWidgets import (QAbstractItemView, QCheckBox, QDateTimeEdit,
                                QTableWidget, QTableWidgetItem, QPlainTextEdit,
                                QVBoxLayout, QWidget)
 
+from app.core.xml_exporter import write_timeline_xml
 from app.core.scanner import DEFAULT_EXTENSIONS
 from app.core.session_report import read_session_report, write_session_report
 from app.core.timestamp_corrector import apply_offset, override_timestamp, set_reference_time
@@ -163,6 +164,10 @@ class MainWindow(QMainWindow):
         self.progress.setTextVisible(False)
         self.progress.hide()
         footer.addWidget(self.progress)
+        self.export_xml_button = QPushButton("Export XML…")
+        self.export_xml_button.setEnabled(False)
+        self.export_xml_button.setToolTip("Experimental chronological timeline for Premiere; import validation required")
+        footer.addWidget(self.export_xml_button)
         self.open_session_button = QPushButton("Open session…")
         footer.addWidget(self.open_session_button)
         self.export_report_button = QPushButton("Export report…")
@@ -198,6 +203,7 @@ class MainWindow(QMainWindow):
         self.add_folder_button.clicked.connect(self._add_folder)
         self.remove_folder_button.clicked.connect(self._remove_folders)
         self.scan_button.clicked.connect(self._start_scan)
+        self.export_xml_button.clicked.connect(self._export_xml)
         self.open_session_button.clicked.connect(self._open_session)
         self.export_report_button.clicked.connect(self._export_report)
         self.table.itemChanged.connect(self._include_changed)
@@ -235,6 +241,7 @@ class MainWindow(QMainWindow):
         self.open_session_button.setEnabled(False)
         self.scan_button.setEnabled(False)
         self.export_report_button.setEnabled(False)
+        self.export_xml_button.setEnabled(False)
         self.add_folder_button.setEnabled(False)
         self.remove_folder_button.setEnabled(False)
         self.progress.setRange(0, 0)
@@ -255,6 +262,7 @@ class MainWindow(QMainWindow):
         self.videos = videos
         self.excluded_paths.intersection_update(video.path for video in videos)
         self.export_report_button.setEnabled(bool(videos))
+        self.export_xml_button.setEnabled(bool(videos))
         self.tool_notices = self._collect_tool_notices(videos)
         current_camera = self.camera_filter.currentText()
         self.camera_filter.blockSignals(True)
@@ -351,6 +359,19 @@ class MainWindow(QMainWindow):
         missing = sum(not os.path.isfile(video.path) for video in videos)
         self.status_label.setText("Opened {} clips from session{}".format(
             len(videos), " · {} media files unavailable at saved paths".format(missing) if missing else ""))
+
+    def _export_xml(self):
+        path, _ = QFileDialog.getSaveFileName(self, "Export experimental Premiere timeline", "timeline.xml", "Final Cut Pro 7 XML (*.xml)")
+        if not path:
+            return
+        if not os.path.splitext(path)[1]:
+            path += ".xml"
+        try:
+            write_timeline_xml(path, self.videos, excluded_paths=self.excluded_paths)
+        except (OSError, ValueError, TypeError) as exc:
+            QMessageBox.warning(self, "XML could not be exported", str(exc))
+            return
+        self.status_label.setText("Saved experimental XML. Import in Premiere to verify picture, sound, timing, and media links.")
 
     def _export_report(self):
         path, selected_filter = QFileDialog.getSaveFileName(
