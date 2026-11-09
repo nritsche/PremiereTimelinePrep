@@ -33,6 +33,14 @@ OpenSSL 3 version materials rather than relying solely on the historical notice.
 The trace narrowed the unmatched root GCC DLL to a host MinGW installation;
 further provider identification is kept distinct from DLL compiler-version proof.
 
+The follow-up private build
+[42691353224](https://github.com/nritsche/PremiereTimelinePrep/actions/runs/42691353224)
+passed 84 tests and its packaged executable check. Its origin report finds a
+nearby MinGW-Builds GCC 15.2.0 compiler for the unmatched root DLL. This is a
+provider hint, not a verified DLL version or an exact source/build match. In
+particular, the GCC 8.3.0 source collected for the staged Perl runtime must not
+be assigned to this different DLL.
+
 ## What the private review build produces
 
 - `native-dependency-review.json`: per-file source/version evidence, notice
@@ -67,3 +75,17 @@ No runtime libraries were removed as part of this review. Size measurements in t
 baseline are: launcher 1.97 MiB, FFprobe 100.35 MiB, software renderer 19.68 MiB.
 A substantially smaller FFprobe or removing the renderer needs compatibility
 validation; neither is described as a zero-downside optimization.
+
+## Probe compatibility gate
+
+Windows CI compares the packaged FFprobe with the runner's reference on generated
+H.264, HEVC, ProRes, MPEG-4, MPEG-2, MJPEG, VP9 and AV1 files with audio. The
+comparison includes stream layouts, timestamps, rates, tags and side data; only
+the unused human-readable codec description may differ. Missing encoders or
+probe failures fail the check rather than silently skipping coverage. Results
+are retained in the Windows diagnostic artifact.
+
+`scripts/check_ffprobe_compatibility.py --candidate PATH` also accepts an
+experimental executable. Passing these synthetic checks is a prerequisite to
+testing a smaller build, not proof that every camera format remains supported.
+The shipped probe and supported features have not been changed.

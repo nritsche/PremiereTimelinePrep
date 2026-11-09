@@ -19,10 +19,11 @@ Implemented by the release-readiness changes:
 - Portable shared-library packaging, full file/PE inventory and original upstream notice preservation.
 - Optional private primary-source collection and review evidence tied to the exact inventory hash.
 - Native version/source matching, historical-notice mismatch detection, and build-input origin tracing.
+- A synthetic media comparison gate for packaged FFprobe across eight video formats with audio.
 
 Still required from the maintainer / target environment:
 
-1. Test on a clean Windows machine. The workflow for commit 85d2266 passed Linux 3.11–3.13, Windows tests, and its packaged self-test; subsequent packaging changes require their own CI run.
+1. Test on a clean Windows machine. Private build 42691353224 passed Linux 3.11–3.13, 84 Windows tests, and its packaged self-test. The newer probe-comparison gate requires its own CI result.
 2. Complete exact bundled-dependency copyright/license/source/relinking review.
    Standard license texts and provenance tooling are included, but do not by
    themselves complete this review. Supply corresponding third-party source/build materials.

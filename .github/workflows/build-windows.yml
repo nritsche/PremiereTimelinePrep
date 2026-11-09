@@ -84,6 +84,8 @@ jobs:
           --exiftool "${{ steps.media-tools.outputs.exiftool }}"
       - name: Test packaged executable and bundled tools
         run: python scripts/check_windows_bundle.py
+      - name: Compare bundled probe metadata across synthetic media formats
+        run: python scripts/check_ffprobe_compatibility.py
       - name: Collect primary source review materials
         if: github.event_name == 'workflow_dispatch' && github.event.repository.private == true && inputs.collect_primary_sources
         run: python scripts/collect_primary_sources.py
@@ -92,7 +94,9 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: Windows-build-diagnostics
-          path: dist/PremiereTimelinePrep/self-test.json
+          path: |
+            dist/PremiereTimelinePrep/self-test.json
+            build-tools/ffprobe-compatibility.json
           if-no-files-found: ignore
       - name: Upload tested executable and notices
         if: vars.PUBLIC_BINARY_DISTRIBUTION_REVIEWED == 'true' || (github.event.repository.private == true && github.event_name == 'workflow_dispatch')
