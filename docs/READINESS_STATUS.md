@@ -16,10 +16,12 @@ Implemented by the release-readiness changes:
 - Sanitized documentation screenshot, walkthrough, privacy/security guidance, issue template.
 - Regression tests for the audit findings and runtime staging.
 - Standard MIT project license, full license text, and SPDX package metadata.
+- Portable shared-library packaging, full file/PE inventory and original upstream notice preservation.
+- Optional private primary-source collection and review evidence tied to the exact inventory hash.
 
 Still required from the maintainer / target environment:
 
-1. Run the updated Windows workflow and test on a clean Windows machine.
+1. Test on a clean Windows machine. The workflow for commit 85d2266 passed Linux 3.11–3.13, Windows tests, and its packaged self-test; subsequent packaging changes require their own CI run.
 2. Complete exact bundled-dependency copyright/license/source/relinking review.
    Standard license texts and provenance tooling are included, but do not by
    themselves complete this review. Supply corresponding third-party source/build materials.

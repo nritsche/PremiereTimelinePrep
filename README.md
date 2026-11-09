@@ -13,7 +13,7 @@ been verified in Premiere. Check picture, sound, and sync before using it for an
 
 For private development, run the build workflow manually and download its **tested** Windows artifact from
 [GitHub Actions](https://github.com/nritsche/PremiereTimelinePrep/actions), unzip the
-whole package, and run `PremiereTimelinePrep.exe`. FFprobe and ExifTool are bundled;
+whole package, and run `PremiereTimelinePrep.exe`. Keep its `_internal/` folder beside it; the portable app is no longer a single-file bundle. FFprobe and ExifTool are bundled;
 Python is not needed. Keep the included notices, manifest and checksums with the
 executable. Experimental private development artifacts are not a reviewed public release. Automatic pushes do not upload unreviewed executables. Private manual builds can upload development artifacts; public binary uploads are disabled until the maintainer enables them after the distribution review.
 
@@ -82,7 +82,7 @@ Windows with Python 3.12. GUI tests use the offscreen Qt platform.
 The [Windows workflow](.github/workflows/build-windows.yml) pins Python build
 packages and Chocolatey tool versions, runs tests, builds with PyInstaller, and
 runs the **actual executable** against synthetic video/audio. Artifacts include
-`self-test.json`, `build-manifest.json`, notices and a SHA-256 checksum.
+`self-test.json`, `build-manifest.json`, the full `distribution-inventory.json`, preserved upstream notices, and a SHA-256 checksum.
 PyInstaller must run on Windows to produce a Windows executable.
 
 To build locally on Windows:
@@ -94,7 +94,7 @@ python scripts/build_windows.py --ffprobe C:\path\to\ffprobe.exe --exiftool 'C:\
 python scripts/check_windows_bundle.py
 ```
 
-The self-test needs FFmpeg on the build machine to generate synthetic media.
+Build output is `dist/PremiereTimelinePrep/`; the executable is inside that portable folder. The self-test needs FFmpeg on the build machine to generate synthetic media.
 Release packages stage only the metadata executables, their required neighboring
 DLLs/runtime files and notices. The manifest records versions and hashes; identical
 binary output across rebuilds is not claimed.
@@ -103,7 +103,12 @@ Public downloads require a license/source distribution review. The manual
 [draft-release workflow](.github/workflows/draft-release.yml) verifies a tested
 artifact, corresponding-source checksum, and license materials, then creates a
 **draft prerelease**, not a published release. See [third-party notices](THIRD_PARTY_NOTICES.md)
-and the [release checklist](docs/RELEASE_CHECKLIST.md).
+and the [release checklist](docs/RELEASE_CHECKLIST.md). The current
+[third-party review evidence](docs/THIRD_PARTY_REVIEW.md) records what remains
+unresolved. For private review builds, the manual workflow can collect primary
+upstream sources and source-shipped notices; these are not automatic distribution
+approval. [Library replacement instructions](docs/LIBRARY_REPLACEMENT.md) describe
+the portable layout and rebuild path.
 
 ## Premiere import check
 

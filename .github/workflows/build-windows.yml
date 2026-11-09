@@ -6,6 +6,11 @@ on:
     tags: ["v*"]
   pull_request:
   workflow_dispatch:
+    inputs:
+      collect_primary_sources:
+        description: Collect primary upstream source archives for private licensing review (not approval)
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -79,17 +84,28 @@ jobs:
           --exiftool "${{ steps.media-tools.outputs.exiftool }}"
       - name: Test packaged executable and bundled tools
         run: python scripts/check_windows_bundle.py
+      - name: Collect primary source review materials
+        if: github.event_name == 'workflow_dispatch' && github.event.repository.private == true && inputs.collect_primary_sources
+        run: python scripts/collect_primary_sources.py
       - name: Upload diagnostic result
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: Windows-build-diagnostics
-          path: dist/self-test.json
+          path: dist/PremiereTimelinePrep/self-test.json
           if-no-files-found: ignore
       - name: Upload tested executable and notices
         if: vars.PUBLIC_BINARY_DISTRIBUTION_REVIEWED == 'true' || (github.event.repository.private == true && github.event_name == 'workflow_dispatch')
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: PremiereTimelinePrep-windows-x64
-          path: dist/
+          path: dist/PremiereTimelinePrep/
+          include-hidden-files: true
+          if-no-files-found: error
+      - name: Upload private primary source review materials
+        if: github.event_name == 'workflow_dispatch' && github.event.repository.private == true && inputs.collect_primary_sources
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: PremiereTimelinePrep-primary-source-review
+          path: build-tools/primary-sources/
           if-no-files-found: error

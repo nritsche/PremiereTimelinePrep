@@ -7,7 +7,7 @@ import subprocess
 
 
 def main():
-    dist = Path('dist').resolve()
+    dist = Path('dist/PremiereTimelinePrep').resolve()
     sample = Path('build-tools/self-test.mp4').resolve()
     ffmpeg = shutil.which('ffmpeg')
     if not ffmpeg:

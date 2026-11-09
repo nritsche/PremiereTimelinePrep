@@ -9,6 +9,7 @@ import shutil
 import subprocess
 import sys
 
+
 ROOT = Path(__file__).resolve().parents[1]
 
 
@@ -38,6 +39,7 @@ def sha256(path):
 
 
 def main() -> int:
+    from distribution_audit import audit_distribution
     parser = argparse.ArgumentParser()
     parser.add_argument('--ffprobe', required=True, type=Path)
     parser.add_argument('--exiftool', required=True, type=Path)
@@ -49,12 +51,12 @@ def main() -> int:
         shutil.rmtree(tools_root)
     for name, executable in [('ffprobe', args.ffprobe), ('exiftool', args.exiftool)]:
         copy_tool_folder(executable.resolve(), tools_root / name, name + '.exe')
-    command = [sys.executable, '-m', 'PyInstaller', '--noconfirm', '--clean', '--onefile',
+    command = [sys.executable, '-m', 'PyInstaller', '--noconfirm', '--clean', '--onedir',
                '--windowed', '--name', 'PremiereTimelinePrep', '--collect-data', 'tzdata',
                '--hidden-import', 'tzdata', '--add-data', '{}{}tools'.format(tools_root, os.pathsep),
                str(ROOT / 'app' / 'main.py')]
     subprocess.run(command, cwd=ROOT, check=True)
-    dist = ROOT / 'dist'
+    dist = ROOT / 'dist' / 'PremiereTimelinePrep'
     staged = {}
     for path in tools_root.rglob('*'):
         if path.is_file():
@@ -64,7 +66,21 @@ def main() -> int:
         executable = tools_root / tool / (tool + '.exe')
         versions[tool] = subprocess.check_output([str(executable), flag], text=True,
             encoding='utf-8', errors='replace', timeout=30).splitlines()[0]
+    build_info = dist / 'upstream-build-info'
+    build_info.mkdir(exist_ok=True)
+    ffprobe = tools_root / 'ffprobe' / 'ffprobe.exe'
+    for flag, filename in [('-buildconf', 'ffprobe-build-configuration.txt'), ('-L', 'ffprobe-license.txt')]:
+        output = subprocess.check_output([str(ffprobe), flag], stderr=subprocess.STDOUT, text=True,
+                                         encoding='utf-8', errors='replace', timeout=30)
+        (build_info / filename).write_text(output, encoding='utf-8')
+    perl = tools_root / 'exiftool' / 'exiftool_files' / 'perl.exe'
+    if perl.is_file():
+        output = subprocess.check_output([str(perl), '-V'], stderr=subprocess.STDOUT, text=True,
+                                         encoding='utf-8', errors='replace', timeout=30)
+        (build_info / 'perl-build-configuration.txt').write_text(output, encoding='utf-8')
+    from PySide6.QtCore import qVersion
     manifest = {
+        'qt_version': qVersion(),
         'commit': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
         'python': sys.version,
         'packages': dict(sorted((d.metadata['Name'], d.version) for d in importlib.metadata.distributions() if d.metadata['Name'])),
@@ -84,6 +100,10 @@ def main() -> int:
     shutil.copytree(ROOT / 'docs', dist / 'docs', dirs_exist_ok=True)
     if (ROOT / 'licenses').is_dir():
         shutil.copytree(ROOT / 'licenses', dist / 'licenses', dirs_exist_ok=True)
+    audit_distribution(dist, manifest['commit'])
+    manifest['distribution_inventory_sha256'] = sha256(dist / 'distribution-inventory.json')
+    manifest['package_layout'] = 'portable-folder-with-replaceable-shared-libraries'
+    (dist / 'build-manifest.json').write_text(json.dumps(manifest, indent=2), encoding='utf-8')
     (dist / 'SHA256SUMS.txt').write_text('{}  PremiereTimelinePrep.exe\n'.format(manifest['executable_sha256']), encoding='utf-8')
     print('Windows build created in {}'.format(dist))
     return 0

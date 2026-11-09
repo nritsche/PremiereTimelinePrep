@@ -27,5 +27,11 @@ corresponding source/build materials required by the chosen distribution terms.
 A URL to a moving upstream branch is not a substitute for corresponding source.
 Check replacement/relinking requirements for the packaged Qt libraries.
 
+New portable builds also include `distribution-inventory.json` with actual file
+hashes and PE version metadata, `distribution-review.json` with explicitly open
+review items, preserved/unpacked upstream notice collections, and upstream build
+configuration output. See [review evidence](docs/THIRD_PARTY_REVIEW.md) and
+[library replacement instructions](docs/LIBRARY_REPLACEMENT.md).
+
 The maintainer must complete `docs/RELEASE_CHECKLIST.md` before publishing a
 release. Packaging and automated tests do not establish license compliance.

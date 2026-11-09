@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Package Windows builds as a portable folder with replaceable libraries, original upstream notice collections, complete file/version inventory and primary-source review tooling.
+
 - License original project code under the standard MIT license.
 
 - Correct ranking for grouped embedded recording dates; retain malformed date candidates.
