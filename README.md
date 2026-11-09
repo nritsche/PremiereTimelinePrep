@@ -11,11 +11,11 @@ been verified in Premiere. Check picture, sound, and sync before using it for an
 
 ## Run on Windows
 
-Download the latest **tested** Windows artifact from
+For private development, run the build workflow manually and download its **tested** Windows artifact from
 [GitHub Actions](https://github.com/nritsche/PremiereTimelinePrep/actions), unzip the
 whole package, and run `PremiereTimelinePrep.exe`. FFprobe and ExifTool are bundled;
 Python is not needed. Keep the included notices, manifest and checksums with the
-executable. Experimental private development artifacts are not a reviewed public release. Public binary artifact uploads are disabled until the maintainer enables them after the distribution review.
+executable. Experimental private development artifacts are not a reviewed public release. Automatic pushes do not upload unreviewed executables. Private manual builds can upload development artifacts; public binary uploads are disabled until the maintainer enables them after the distribution review.
 
 Versioned downloads will be available on the repository's Releases page after the
 [distribution review](docs/RELEASE_CHECKLIST.md) is complete. Builds are unsigned;

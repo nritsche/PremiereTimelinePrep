@@ -22,7 +22,7 @@ complete the legal review or the Premiere integration check.
 - [ ] Include exact corresponding source and build/configuration materials required by each component's distribution terms. Verify source correspondence to the bundled hashes/versions.
 - [ ] Verify Qt library replacement/relinking requirements and document the supported rebuild/replacement method.
 - [ ] Put reviewed full license texts under licenses/; rebuild so they accompany the artifact.
-- [ ] Before enabling public binary artifact downloads, set the repository variable `PUBLIC_BINARY_DISTRIBUTION_REVIEWED=true` only after the distribution review passes. Public repositories otherwise build/test without uploading executables; private development artifacts remain available.
+- [ ] Before enabling public binary artifact downloads, set the repository variable `PUBLIC_BINARY_DISTRIBUTION_REVIEWED=true` only after the distribution review passes. Public repositories otherwise build/test without uploading executables; private manual builds can still upload development artifacts. Review/remove existing artifacts before changing visibility; this guard is not retroactive.
 - [ ] Prepare a corresponding-source ZIP and record its SHA-256. Do not substitute only moving upstream links.
 - [ ] Run the manual draft-release workflow with the successful build run ID and reviewed source ZIP. It rejects missing project/upstream license materials and failed artifact self-tests.
 - [ ] Review the draft assets and notes. Publish manually only after the checks above are complete.
