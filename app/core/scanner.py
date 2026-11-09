@@ -6,15 +6,24 @@ DEFAULT_EXTENSIONS = {".mp4", ".mov", ".m4v", ".avi", ".mkv", ".mts", ".m2ts", "
 
 
 def discover_videos(folders: Iterable[str], extensions: Optional[Iterable[str]] = None,
-                    recursive: bool = True) -> Iterator[str]:
+                    recursive: bool = True, *, cancelled=None, on_error=None) -> Iterator[str]:
+    cancelled = cancelled or (lambda: False)
     allowed = {e.lower() if e.startswith(".") else "." + e.lower() for e in (extensions or DEFAULT_EXTENSIONS)}
     seen: Set[Tuple[object, ...]] = set()
     for folder in folders:
+        if cancelled():
+            return
         if not os.path.isdir(folder):
+            if on_error:
+                on_error(OSError("Folder unavailable: {}".format(folder)))
             continue
-        walker = os.walk(folder) if recursive else ((folder, [], os.listdir(folder)),)
+        walker = os.walk(folder, onerror=on_error) if recursive else ((folder, [], os.listdir(folder)),)
         for root, _, names in walker:
+            if cancelled():
+                return
             for name in names:
+                if cancelled():
+                    return
                 path = os.path.join(root, name)
                 if os.path.splitext(name)[1].lower() not in allowed or not os.path.isfile(path):
                     continue

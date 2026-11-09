@@ -29,7 +29,7 @@ _DATE_PATTERNS = (
 )
 
 
-def parse_timestamp(raw: object, default_timezone: timezone = timezone.utc) -> Optional[datetime]:
+def _parse_timestamp(raw: object, default_timezone: timezone = timezone.utc) -> Optional[datetime]:
     """Parse common ExifTool/QuickTime/filename date forms; return aware UTC."""
     if raw is None:
         return None
@@ -74,6 +74,21 @@ def parse_timestamp(raw: object, default_timezone: timezone = timezone.utc) -> O
     return None
 
 
+def parse_timestamp(raw: object, default_timezone: timezone = timezone.utc) -> Optional[datetime]:
+    """Malformed camera dates are reviewable candidates, never scan failures."""
+    try:
+        return _parse_timestamp(raw, default_timezone)
+    except (ValueError, OverflowError, TypeError):
+        return None
+
+
+def canonical_source(source):
+    """Rank a grouped tag without discarding its original provenance."""
+    name = source.rsplit(":", 1)[-1]
+    aliases = {"creation_time": "CreationTime", "creationtime": "CreationTime"}
+    return aliases.get(name.lower(), name)
+
+
 def candidate(source: str, raw: object, confidence: Optional[float] = None,
               default_timezone: timezone = timezone.utc) -> TimestampCandidate:
     text = str(raw)
@@ -85,7 +100,7 @@ def candidate(source: str, raw: object, confidence: Optional[float] = None,
         warnings.append("Possible unset camera clock (January 1 sentinel date)")
     if parsed and (parsed.year < 1990 or parsed.year > 2100):
         warnings.append("Timestamp is outside the expected 1990–2100 range")
-    return TimestampCandidate(source, text, parsed, confidence if confidence is not None else FIELD_CONFIDENCE.get(source, 0.5), warnings)
+    return TimestampCandidate(source, text, parsed, confidence if confidence is not None else FIELD_CONFIDENCE.get(canonical_source(source), 0.5), warnings)
 
 
 def resolve_timestamp(values: Dict[str, object], filename: str = "", filesystem_created: Optional[datetime] = None,
@@ -115,10 +130,12 @@ def resolve_timestamp(values: Dict[str, object], filename: str = "", filesystem_
     valid = [c for c in candidates if c.normalized]
     # Ranking uses explicit field priority, then configured confidence.
     order = {name: index for index, name in enumerate(FIELD_CONFIDENCE)}
-    selected = min(valid, key=lambda c: (order.get(c.source, 999), -c.confidence)) if valid else None
+    selected = min(valid, key=lambda c: (order.get(canonical_source(c.source), 999), -c.confidence)) if valid else None
     warnings: List[str] = []
     embedded = [c for c in valid if c.source not in ("filename", "filesystem_created", "filesystem_modified")]
     if selected:
+        if selected.source in ("filesystem_created", "filesystem_modified"):
+            warnings.append("Recording date is based on a filesystem time; copying files may change it")
         instant = selected.normalized
         reference = (now or datetime.now(timezone.utc)).astimezone(timezone.utc)
         if instant < datetime(1990, 1, 1, tzinfo=timezone.utc) or instant > reference + timedelta(days=365):

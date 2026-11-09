@@ -6,3 +6,11 @@ build/
 build-tools/
 dist/
 *.spec
+
+# Personal review data and generated exports (use docs/examples for sanitized examples).
+/exports/
+/session-report*.json
+/session-report*.csv
+/timeline*.xml
+/release-staging/
+*.egg-info/

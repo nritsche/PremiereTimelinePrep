@@ -12,7 +12,8 @@ def clip(name, rate=25, duration=2, audio=True):
     return VideoFile(str(Path('media', name).resolve()), name, 100, duration_seconds=duration,
                      width=1920, height=1080, frame_rate=rate,
                      audio_codec='aac' if audio else None,
-                     metadata={'ffprobe.audio_channels': 2, 'ffprobe.audio_sample_rate': 48000})
+                     metadata={'ffprobe.audio_channels': 2, 'ffprobe.audio_sample_rate': 48000,
+                               'ffprobe.streams': [{'codec_type': 'video'}]})
 
 
 def test_linked_assembly_paths_order_exclusion_and_mixed_rates(tmp_path):

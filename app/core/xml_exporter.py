@@ -7,6 +7,7 @@ import tempfile
 import xml.etree.ElementTree as ET
 
 from app.core.chronological_sorter import chronological_sort
+from app.core.output_safety import check_output_path
 
 
 def _rate(value):
@@ -68,12 +69,61 @@ def _write_rate(parent, rate):
     _text(node, "ntsc", "TRUE" if rate[1] else "FALSE")
 
 
+def _inspect_media_support(video):
+    """Reject media characteristics this exporter cannot faithfully describe."""
+    if "ffprobe.streams" not in video.metadata:
+        raise ValueError("{}: stream details are missing; rescan before XML export".format(video.filename))
+    streams = video.metadata["ffprobe.streams"]
+    if not isinstance(streams, list) or any(not isinstance(stream, dict) for stream in streams):
+        raise ValueError("Invalid media stream metadata; rescan before export")
+    video_streams = [s for s in streams if s.get("codec_type") == "video" and not s.get("disposition", {}).get("attached_pic")]
+    audio_streams = [s for s in streams if s.get("codec_type") == "audio"]
+    issues = []
+    if not video_streams:
+        raise ValueError("Video stream details are missing; rescan before XML export")
+    if len(video_streams) > 1:
+        issues.append("multiple video streams")
+    if len(audio_streams) > 1:
+        issues.append("multiple audio streams")
+    stream = video_streams[0] if video_streams else {}
+    rotation = stream.get("tags", {}).get("rotate", 0)
+    for data in stream.get("side_data_list", []):
+        if "rotation" in data:
+            rotation = data["rotation"]
+    if float(rotation) % 360:
+        issues.append("rotation metadata")
+    if stream.get("sample_aspect_ratio") not in (None, "N/A", "0:1", "1:1"):
+        issues.append("non-square pixels")
+    if stream.get("field_order") not in (None, "unknown", "progressive"):
+        issues.append("interlaced video")
+    duration = stream.get("duration")
+    if duration not in (None, "N/A") and abs(float(duration) - video.duration_seconds) > 1 / float(timeline_rate(video)[0][2]):
+        issues.append("different video and container durations")
+    for source in [stream] + audio_streams:
+        offset = source.get("start_time", "0")
+        if offset not in (None, "N/A") and abs(float(offset)) > 1 / float(timeline_rate(video)[0][2]):
+            issues.append("nonzero stream start offset")
+    if issues:
+        raise ValueError("{}: XML export does not yet support {}. Use a normalized copy or exclude this clip.".format(video.filename, ", ".join(dict.fromkeys(issues))))
+
+
+def _check_media_support(video):
+    try:
+        _inspect_media_support(video)
+    except (TypeError, AttributeError, OverflowError) as exc:
+        raise ValueError("{}: invalid stream metadata; rescan before XML export".format(video.filename)) from exc
+
+
 def write_timeline_xml(path, videos, *, excluded_paths=(), name="Chronological footage"):
     """Write a contiguous assembly with linked video and per-channel audio.
 
     Sequence settings follow the first included clip. Source and sequence frame
     counts use their own rates; capture times determine ordering, not gaps.
     """
+    videos = list(videos)
+    check_output_path(path, videos)
+    if Path(path).suffix.lower() != ".xml":
+        raise ValueError("Choose a .xml filename")
     excluded = set(excluded_paths)
     clips = chronological_sort([v for v in videos if v.path not in excluded])
     if not clips:
@@ -86,6 +136,7 @@ def write_timeline_xml(path, videos, *, excluded_paths=(), name="Chronological f
             raise ValueError("{}: video dimensions are missing; rescan with FFprobe".format(video.filename))
         if not Path(video.path).is_absolute():
             raise ValueError("Media paths must be absolute")
+        _check_media_support(video)
         rates.append(timeline_rate(video)[0])
         if video.audio_codec and not video.metadata.get("ffprobe.audio_channels"):
             raise ValueError("{}: audio channel details are missing; rescan before XML export".format(video.filename))
@@ -104,6 +155,7 @@ def write_timeline_xml(path, videos, *, excluded_paths=(), name="Chronological f
     video_track = ET.SubElement(video_media, "track")
     audio_media = ET.SubElement(media, "audio")
     audio_tracks = []
+    audio_clip_counts = []
     elapsed = Fraction(0)
     for index, (video, rate) in enumerate(zip(clips, rates), 1):
         source_frames = max(1, round(Fraction(str(video.duration_seconds)) * rate[2]))
@@ -119,6 +171,9 @@ def write_timeline_xml(path, videos, *, excluded_paths=(), name="Chronological f
             raise ValueError("Unsupported audio channel count")
         while len(audio_tracks) < channels:
             audio_tracks.append(ET.SubElement(audio_media, "track"))
+            audio_clip_counts.append(0)
+        for channel in range(channels):
+            audio_clip_counts[channel] += 1
         ids = ["video-{}".format(index)] + ["audio-{}-{}".format(index, ch + 1) for ch in range(channels)]
         for channel in range(channels + 1):
             item = ET.SubElement(video_track if channel == 0 else audio_tracks[channel - 1], "clipitem", id=ids[channel])
@@ -151,7 +206,7 @@ def write_timeline_xml(path, videos, *, excluded_paths=(), name="Chronological f
                 _text(link, "linkclipref", linked_id)
                 _text(link, "mediatype", "video" if linked_channel == 0 else "audio")
                 _text(link, "trackindex", max(1, linked_channel))
-                _text(link, "clipindex", index if linked_channel == 0 else sum(1 for prev in clips[:index] if prev.audio_codec and int(prev.metadata.get("ffprobe.audio_channels", 0)) >= linked_channel))
+                _text(link, "clipindex", index if linked_channel == 0 else audio_clip_counts[linked_channel - 1])
     _text(sequence, "duration", end)
     notices = timeline_rate_notices(clips)
     if notices:

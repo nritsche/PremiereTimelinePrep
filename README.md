@@ -1,59 +1,117 @@
 # Premiere Timeline Prep
 
-Premiere Timeline Prep prepares footage metadata and recording-time order for an Adobe Premiere Pro edit. The current GUI supports folder selection, background scanning, readable timestamp review, individual timestamp overrides, manual camera grouping, and camera-group time corrections. Session reports can be exported as JSON or CSV. Experimental Premiere XML timeline export is available for import testing.
+Review video recording dates, correct camera clocks, and export a chronological
+assembly for Adobe Premiere Pro. Media stays in its original location and is not
+edited or transcoded.
 
-## Current capabilities
+**Experimental:** XML export has automated structure/timing tests but has not yet
+been verified in Premiere. Check picture, sound, and sync before using it for an edit.
 
-- Recursively discovers the supported video extensions and avoids duplicates across overlapping folders and hard links.
-- Reads technical stream information with FFprobe and broad metadata with ExifTool when installed.
-- Keeps raw timestamp metadata, filesystem times, filename dates, and parsed UTC instants as reviewable candidates.
-- Prefers explicit recording dates, then creation dates, then filename dates, and finally weak filesystem times. Filesystem creation/modification dates are weak because copying changes them. Naive camera timestamps are interpreted as UTC by default; this is configurable for callers. An explicit offset is honored and normalized to UTC.
-- Flags sentinel dates, out-of-range dates, and conflicting embedded date fields without discarding them.
-- Provides camera-group time offsets, reference-clip correction, and per-clip override primitives.
-- Includes a PySide6 folder selection and asynchronous scan window with searchable, sortable metadata review.
-- Shows full candidate and warning details for the selected clip. Missing FFprobe/ExifTool are presented as setup notices, rather than repeated clip timestamp warnings.
-- Allows individual time overrides, manual source assignment, and camera-group offsets or reference-time corrections during the current scan session.
-- Exports JSON audit reports with raw metadata, original timestamp candidates, corrected selections, and inclusion flags; CSV inventories list clips chronologically with unknown times last. Reports include all scanned clips regardless of search filters.
-- Preserves clip inclusion choices when timestamps or camera groups change. Open a JSON report with “Open session…” to restore footage review, camera groups, corrections, and inclusion choices without rescanning. Unavailable media paths are reported after opening; CSV files are review inventories and cannot be reopened as sessions.
+![Footage review with synthetic example clips](docs/images/review.png)
 
-The selection policy is deliberately visible in `app/core/timestamp_resolver.py`. Camera vendors use inconsistent QuickTime conventions, and a timestamp alone cannot establish a camera's timezone. Review warnings and raw candidates before applying corrections.
+## Run on Windows
 
-## Setup
+Download the latest **tested** Windows artifact from
+[GitHub Actions](https://github.com/nritsche/PremiereTimelinePrep/actions), unzip the
+whole package, and run `PremiereTimelinePrep.exe`. FFprobe and ExifTool are bundled;
+Python is not needed. Keep the included notices, manifest and checksums with the
+executable. Experimental private development artifacts are not a reviewed public release. Public binary artifact uploads are disabled until the maintainer enables them after the distribution review.
+
+Versioned downloads will be available on the repository's Releases page after the
+[distribution review](docs/RELEASE_CHECKLIST.md) is complete. Builds are unsigned;
+verify their origin and checksum rather than disabling security software.
+
+## Scan, review, export
+
+1. **Add folders.** Choose whether to include subfolders and which video formats to scan.
+2. **Choose camera timezone.** Use the timezone your cameras used for dates without an explicit offset, e.g. `Europe/Madrid`. UTC is the default. Dates containing an offset keep it; all displayed times are UTC. If cameras used different timezones, correct each camera group after scanning.
+3. **Scan folders.** The app reads metadata in the background. Cancel scan or close the app to stop; a cancelled or failed scan retains the previous review.
+4. **Check recording dates.** Select a clip to inspect every timestamp candidate, its source, and warnings. Embedded recording dates take priority over generic creation dates, filename dates, then weak filesystem dates. Filesystem dates can change when files are copied. Confidence is a ranking heuristic, not proof that a camera clock was correct.
+5. **Correct clocks if needed.** Use **Edit selected timestamp…** for one clip, including a clip with no date. Select clips and use **Group selected clips…** to assign a camera/source name. **Correct camera group…** applies an offset or shifts the group using one clip's actual recording time. Grouping is manual when metadata cannot identify a device reliably.
+6. **Check inclusion and order.** Uncheck Include for unwanted clips. **Review export order…** shows every included clip in exactly the order the XML uses. Compare its dates against the event you filmed. Search filters and table sorting do not change export order. Unknown dates go last; ties use filename and full path.
+7. **Save your review.** **Export report… → JSON** saves original candidates, corrections, groups, inclusion choices and metadata. **Open session…** resumes it without rescanning. CSV is a human-readable inventory and cannot restore a session. The title marks unsaved review work; opening, rescanning or closing offers Save/Discard/Cancel. CSV and XML exports do not save the full review.
+8. **Export XML…** opens the order review before asking where to save. Clips are placed back-to-back: recording-time gaps are removed. If rates need approximation, the explanation and scrollable details show why; check playback and audio sync after importing into Premiere.
+
+## Supported media and limits
+
+- Discovery supports `.mp4`, `.mov`, `.m4v`, `.avi`, `.mkv`, `.mts`, `.m2ts`, `.3gp` and `.webm`. Recognition does not guarantee Premiere can decode the codec.
+- Overlapping folders and hard links are deduplicated. Unavailable folders produce scan errors rather than replacing a review with an empty result.
+- XML is Final Cut Pro 7 `xmeml` version 5, based on [Apple's encoding documentation](https://developer.apple.com/library/archive/documentation/AppleApplications/Reference/FinalCutPro_XML/Basics/Basics.html). It is distinct from `.fcpxml`, which [Premiere cannot directly import](https://helpx.adobe.com/ca/premiere/desktop/organize-media/import-files/migrate-from-final-cut-pro-x.html).
+- Sequence settings follow the first included clip. Supported audio channels are linked on separate tracks. The exporter requires current stream metadata; reopen old reports for review, then rescan before exporting XML when requested.
+- Multiple video/audio streams, rotation, non-square pixels, interlacing, significant stream start offsets, and mismatched video/container durations are rejected rather than silently exported incorrectly. Use a normalized copy or exclude those clips. Normalization is not implemented by this app.
+- Variable-rate footage is not converted to constant rate. Export prefers a representable base-rate guess close to the average, otherwise a nearby common rate or nearest integer. Approximation notices appear before export and in the XML log. Boundary positions use cumulative elapsed duration; this does not prove frame accuracy or audio sync.
+- Export destinations cannot be source media or its aliases. Reports/XML use absolute paths; moving media or using another computer requires relinking. Relinking inside this app is not implemented.
+- JSON sessions have a 64 MB / 50,000 clip loading limit. Opening a saved session does not revalidate or reread the original media.
+
+## Privacy
+
+Scanning, review and export run locally; there is no telemetry or media upload.
+JSON reports preserve raw metadata and absolute paths, potentially including names,
+recording dates, GPS positions and device identifiers. XML also contains media
+paths. Sanitize exports and screenshots before sharing them. Default `session-report*` and `timeline*` exports in the project root, and all
+files in `exports/`, are ignored by Git. CSV neutralizes common formula
+prefixes; JSON preserves the original values. See [SECURITY.md](SECURITY.md).
+
+## Run from source
+
+Use Python 3.11 or newer.
 
 ```bash
-python3.11 -m venv .venv
+python3 -m venv .venv
 . .venv/bin/activate
 pip install -e '.[gui,dev]'
+python -m app.main
 ```
 
-FFprobe and ExifTool are optional during development and are detected from `PATH`. The scanner continues if either tool is missing or fails on an individual file. The Windows build will bundle or explicitly locate these tools; they are not installed by this package. Media processing is offline.
+On Windows, activate with `.venv\Scripts\Activate.ps1`, then run the same pip and
+Python commands. On Ubuntu install metadata tools with:
 
-Run unit tests with `pytest`.
+```bash
+sudo apt install ffmpeg libimage-exiftool-perl
+```
 
-## Windows build
+Tools are detected from PATH when running from source. Missing tools are shown as
+setup notices; durations and embedded dates may be incomplete. Scan again after
+installing tools. Linux file-change time is not treated as file creation time.
 
-`.github/workflows/build-windows.yml` builds on `windows-latest` because PyInstaller does not cross-compile Windows executables from Ubuntu. The workflow installs FFmpeg and ExifTool on its Windows runner, stages FFprobe, ExifTool, and neighboring runtime files, runs the tests, then uploads `PremiereTimelinePrep.exe` as a workflow artifact. Run it with `workflow_dispatch`, push to `main`/`master`, or push a `v*` tag. The packaged application locates those bundled tools without requiring them on the end user's `PATH`.
+Run tests with `python -m pytest -q`. CI checks Linux with Python 3.11–3.13 and
+Windows with Python 3.12. GUI tests use the offscreen Qt platform.
 
-The same staging/build step can be run locally on Windows with Python 3.11+ after installing `.[gui,dev]` and providing the paths to `scripts/build_windows.py`:
+## Windows builds and releases
+
+The [Windows workflow](.github/workflows/build-windows.yml) pins Python build
+packages and Chocolatey tool versions, runs tests, builds with PyInstaller, and
+runs the **actual executable** against synthetic video/audio. Artifacts include
+`self-test.json`, `build-manifest.json`, notices and a SHA-256 checksum.
+PyInstaller must run on Windows to produce a Windows executable.
+
+To build locally on Windows:
 
 ```powershell
-python scripts/build_windows.py --ffprobe C:\path\to\ffprobe.exe --exiftool C:\path\to\exiftool(-k).exe
+python -m pip install -r requirements-build.txt
+python -m pip install --no-build-isolation --no-deps -e .
+python scripts/build_windows.py --ffprobe C:\path\to\ffprobe.exe --exiftool 'C:\path\to\exiftool(-k).exe'
+python scripts/check_windows_bundle.py
 ```
 
-## Premiere interchange status
+The self-test needs FFmpeg on the build machine to generate synthetic media.
+Release packages stage only the metadata executables, their required neighboring
+DLLs/runtime files and notices. The manifest records versions and hashes; identical
+binary output across rebuilds is not claimed.
 
-Use **Review export order…** to see every included clip in the exact order that XML export uses, together with recording dates and camera sources. Unknown dates appear last. Check these dates against the event you filmed; correct individual dates or camera clocks in the main window. Search filters and table sorting do not change the exported order.
+Public downloads require a license/source distribution review. The manual
+[draft-release workflow](.github/workflows/draft-release.yml) verifies a tested
+artifact, corresponding-source checksum, and license materials, then creates a
+**draft prerelease**, not a published release. See [third-party notices](THIRD_PARTY_NOTICES.md)
+and the [release checklist](docs/RELEASE_CHECKLIST.md).
 
-Use **Export XML…** after scanning with FFprobe installed. Export first opens this same order preview, with a plain-language timing explanation and scrollable per-clip details when rates need approximation. The action buttons remain outside the scrolling details. Included clips are placed back-to-back in capture-time order, with unknown capture times last. Search filters do not change inclusion. The first included clip sets the sequence frame rate and dimensions; source rates are retained and positions use sequence frames. Embedded audio channels are exported on linked audio tracks. No media is copied or transcoded.
+## Premiere import check
 
-Export uses Final Cut Pro 7 `xmeml` version 5, based on [Apple’s encoding documentation](https://developer.apple.com/library/archive/documentation/AppleApplications/Reference/FinalCutPro_XML/Basics/Basics.html). This is distinct from Final Cut Pro X `.fcpxml`, which [Premiere cannot directly import](https://helpx.adobe.com/ca/premiere/desktop/organize-media/import-files/migrate-from-final-cut-pro-x.html).
+1. Create a test project and use **File → Import** to select the XML.
+2. Verify the expected media and sequence appear, open the sequence, and check order, exclusions, links and sequence settings.
+3. Play across boundaries and near the end of long clips. Check every audio channel, linked selection and sync, particularly for mixed or variable rates.
+4. Compare duration with included footage, allowing frame rounding. Save, reopen and verify again; test relinking after moving media.
+5. Record app/Premiere/Windows versions, warnings and results in [the validation record](docs/PREMIERE_VALIDATION.md). Use synthetic or licensed samples.
 
-This exporter is experimental. Automated checks verify XML structure and timing but do not prove Premiere compatibility. Audio channel details require a fresh scan if the session predates XML export. Missing durations, dimensions, invalid rates, and missing audio channel details block export rather than silently omit media. For nonstandard average rates, export prefers a representable FFprobe base-rate guess within 2% of the average, otherwise the nearest common rate within 1%, otherwise the nearest integer. The export dialog lists approximations before proceeding, and the XML sequence log retains those notices. This does not convert variable-frame-rate media to constant rate; playback and audio sync require import review. Timeline boundaries use cumulative elapsed duration to avoid accumulating per-clip frame rounding drift. Paths are absolute file URLs: moving files or importing on another computer requires relinking.
-
-### Manual Premiere integration check
-
-1. Scan a small sample with at least two clips, including audio; export XML. Include mixed frame rates and a filename with spaces or accented characters when available.
-2. In Premiere, create a test project and use File > Import to select the XML. Record the Premiere version and any import warnings.
-3. Confirm the Project panel contains the expected media and sequence. Open the sequence and check clip order, excluded clips, sequence settings, and media links.
-4. Play the first and last seconds of each clip. Check picture, all audio channels, linked video/audio selection, clip boundaries, and sync, especially for mixed or variable frame rates.
-5. Compare timeline duration with the included footage duration, allowing frame rounding. Save, reopen, and verify again. Keep this checklist incomplete until tested in Premiere.
+Report bugs using the repository's issue template. Do not attach unreviewed private
+reports or footage. Development guidance is in [CONTRIBUTING.md](CONTRIBUTING.md).

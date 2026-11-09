@@ -1,5 +1,6 @@
 """Folder selection and asynchronous metadata review window."""
 import os
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError, available_timezones
 
 from PySide6.QtCore import QDateTime, Qt
 from PySide6.QtGui import QColor
@@ -26,10 +27,12 @@ class MainWindow(QMainWindow):
 
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("Premiere Timeline Prep")
+        self.setWindowTitle("Premiere Timeline Prep[*]")
         self.resize(1180, 760)
         self.setMinimumSize(820, 540)
         self.worker = None
+        self.dirty = False
+        self._close_pending = False
         self.videos = []
         self.tool_notices = []
         self.excluded_paths = set()
@@ -89,6 +92,16 @@ class MainWindow(QMainWindow):
             self.extension_list.addItem(item)
         options_row.addWidget(self.extension_list, 1)
         folder_layout.addLayout(options_row)
+        timezone_row = QHBoxLayout()
+        timezone_row.addWidget(QLabel("Camera timezone for the next scan:"))
+        self.timezone_combo = QComboBox()
+        self.timezone_combo.setEditable(True)
+        self.timezone_combo.addItems(["UTC"] + sorted(available_timezones() - {"UTC"}))
+        timezone_row.addWidget(self.timezone_combo, 1)
+        folder_layout.addLayout(timezone_row)
+        timezone_help = QLabel("Used for dates without an offset. Changing this setting requires a new scan. All review times are shown in UTC.")
+        timezone_help.setWordWrap(True)
+        folder_layout.addWidget(timezone_help)
         root.addWidget(folder_panel)
 
         review_row = QHBoxLayout()
@@ -170,6 +183,9 @@ class MainWindow(QMainWindow):
         self.progress.setTextVisible(False)
         self.progress.hide()
         footer.addWidget(self.progress)
+        self.cancel_scan_button = QPushButton("Cancel scan")
+        self.cancel_scan_button.hide()
+        footer.addWidget(self.cancel_scan_button)
         self.review_order_button = QPushButton("Review export order…")
         self.review_order_button.setEnabled(False)
         export_row.addWidget(self.review_order_button)
@@ -212,6 +228,7 @@ class MainWindow(QMainWindow):
         self.add_folder_button.clicked.connect(self._add_folder)
         self.remove_folder_button.clicked.connect(self._remove_folders)
         self.scan_button.clicked.connect(self._start_scan)
+        self.cancel_scan_button.clicked.connect(self._cancel_scan)
         self.review_order_button.clicked.connect(self._review_export_order)
         self.export_xml_button.clicked.connect(self._export_xml)
         self.open_session_button.clicked.connect(self._open_session)
@@ -248,6 +265,13 @@ class MainWindow(QMainWindow):
         if not extensions:
             QMessageBox.information(self, "Select formats", "Choose at least one supported video format.")
             return
+        try:
+            ZoneInfo(self.timezone_combo.currentText().strip())
+        except (ZoneInfoNotFoundError, ValueError):
+            QMessageBox.warning(self, "Choose a timezone", "Choose a valid timezone, such as UTC or Europe/Madrid.")
+            return
+        if not self._confirm_discard():
+            return
         self.open_session_button.setEnabled(False)
         self.scan_button.setEnabled(False)
         self.export_report_button.setEnabled(False)
@@ -255,14 +279,80 @@ class MainWindow(QMainWindow):
         self.review_order_button.setEnabled(False)
         self.add_folder_button.setEnabled(False)
         self.remove_folder_button.setEnabled(False)
+        self.table.setEnabled(False)
+        self.edit_timestamp_button.setEnabled(False)
+        self.assign_source_button.setEnabled(False)
+        self.correct_camera_button.setEnabled(False)
+        self.timezone_combo.setEnabled(False)
+        self.cancel_scan_button.show()
+        self.cancel_scan_button.setEnabled(True)
         self.progress.setRange(0, 0)
         self.progress.show()
         self.status_label.setText("Starting scan…")
-        self.worker = ScanWorker(folders, extensions, self.recursive_check.isChecked())
+        self.worker = ScanWorker(folders, extensions, self.recursive_check.isChecked(), self.timezone_combo.currentText().strip())
         self.worker.status.connect(self.status_label.setText)
         self.worker.progress.connect(self._update_progress)
         self.worker.completed.connect(self._scan_completed)
+        self.worker.failed.connect(self._scan_failed)
+        self.worker.cancelled.connect(lambda: self.status_label.setText("Scan cancelled; previous review retained."))
+        self.worker.finished.connect(self._finish_scan)
         self.worker.start()
+
+    def _cancel_scan(self):
+        if self.worker and self.worker.isRunning():
+            self.worker.requestInterruption()
+            self.cancel_scan_button.setEnabled(False)
+            self.status_label.setText("Stopping scan…")
+
+    def _scan_failed(self, message):
+        self.status_label.setText("Scan failed; previous review retained.")
+        if not self._close_pending:
+            QMessageBox.warning(self, "Scan failed", message)
+
+    def _finish_scan(self):
+        self.progress.hide()
+        self.cancel_scan_button.hide()
+        self.timezone_combo.setEnabled(True)
+        self.table.setEnabled(True)
+        for button in (self.scan_button, self.add_folder_button, self.remove_folder_button, self.open_session_button):
+            button.setEnabled(True)
+        for button in (self.export_report_button, self.export_xml_button, self.review_order_button):
+            button.setEnabled(bool(self.videos))
+        self._show_row_details(0, 0, 0, 0)
+        if self._close_pending:
+            self.close()
+
+    def _set_dirty(self, dirty=True):
+        self.dirty = dirty
+        self.setWindowModified(dirty)
+
+    def _save_session(self):
+        path, _ = QFileDialog.getSaveFileName(self, "Save reviewed session", "session-report.json", "JSON session (*.json)")
+        if not path:
+            return False
+        if not os.path.splitext(path)[1]:
+            path += ".json"
+        if os.path.splitext(path)[1].lower() != ".json":
+            QMessageBox.warning(self, "Choose JSON", "Save a .json session to preserve the full review.")
+            return False
+        try:
+            write_session_report(path, self.videos, excluded_paths=self.excluded_paths,
+                                 folders=[self.folder_list.item(i).text() for i in range(self.folder_list.count())])
+        except (OSError, ValueError, TypeError) as exc:
+            QMessageBox.warning(self, "Session could not be saved", str(exc))
+            return False
+        self._set_dirty(False)
+        return True
+
+    def _confirm_discard(self):
+        if not self.dirty:
+            return True
+        answer = QMessageBox.question(self, "Save reviewed session?",
+            "Save your clip dates, camera groups, and inclusion choices before continuing?",
+            QMessageBox.Save | QMessageBox.Discard | QMessageBox.Cancel, QMessageBox.Cancel)
+        if answer == QMessageBox.Save:
+            return self._save_session()
+        return answer == QMessageBox.Discard
 
     def _update_progress(self, current, total):
         self.progress.setRange(0, total)
@@ -271,6 +361,7 @@ class MainWindow(QMainWindow):
 
     def _scan_completed(self, videos):
         self.videos = videos
+        self._set_dirty(bool(videos))
         self.excluded_paths.intersection_update(video.path for video in videos)
         self.export_report_button.setEnabled(bool(videos))
         self.export_xml_button.setEnabled(bool(videos))
@@ -339,6 +430,7 @@ class MainWindow(QMainWindow):
         self._filter_rows(self.search_field.text())
         if videos:
             self.table.setCurrentCell(0, 1)
+            self._show_row_details(0, 1, -1, -1)
         else:
             self.details.clear()
             self.details_heading.setText("Select a clip to inspect its timestamp candidates and warnings.")
@@ -350,6 +442,7 @@ class MainWindow(QMainWindow):
         if item.column() != 0:
             return
         path = item.data(Qt.UserRole)
+        self._set_dirty()
         if item.checkState() == Qt.Checked:
             self.excluded_paths.discard(path)
         else:
@@ -364,10 +457,16 @@ class MainWindow(QMainWindow):
         except (OSError, ValueError) as exc:
             QMessageBox.warning(self, "Session could not be opened", str(exc))
             return
+        if not self._confirm_discard():
+            return
         self.excluded_paths = excluded
         self.folder_list.clear()
         self.folder_list.addItems(folders)
         self._scan_completed(videos)
+        self._set_dirty(False)
+        zones = {video.metadata.get("assumed_timezone", "UTC") for video in videos}
+        if len(zones) == 1:
+            self.timezone_combo.setCurrentText(zones.pop())
         missing = sum(not os.path.isfile(video.path) for video in videos)
         self.status_label.setText("Opened {} clips from session{}".format(
             len(videos), " · {} media files unavailable at saved paths".format(missing) if missing else ""))
@@ -412,6 +511,8 @@ class MainWindow(QMainWindow):
         except (OSError, ValueError, TypeError) as exc:
             QMessageBox.warning(self, "Report could not be saved", str(exc))
             return
+        if os.path.splitext(path)[1].lower() == ".json":
+            self._set_dirty(False)
         self.status_label.setText("Saved session report to {}".format(path))
 
     @staticmethod
@@ -445,11 +546,12 @@ class MainWindow(QMainWindow):
             self.correct_camera_button.setEnabled(False)
             return
         self.details_heading.setText("Clip review: {}".format(video.filename))
-        self.edit_timestamp_button.setEnabled(video.selected_timestamp is not None)
+        self.edit_timestamp_button.setEnabled(True)
         self.assign_source_button.setEnabled(True)
         self.correct_camera_button.setEnabled(bool(video.camera))
         timestamp = video.selected_timestamp
         lines = ["File: {}".format(video.path),
+                 "Timezone assumed for dates without an offset: {}".format(video.metadata.get("assumed_timezone", "UTC (legacy session)")),
                  "Size: {} bytes    Duration: {}    Resolution: {}    Frame rate: {}".format(
                      video.size_bytes, self._duration(video.duration_seconds),
                      "{} × {}".format(video.width, video.height) if video.width and video.height else "unknown",
@@ -484,14 +586,16 @@ class MainWindow(QMainWindow):
 
     def _edit_selected_timestamp(self):
         video = self._selected_video()
-        if not video or not video.selected_timestamp or not video.selected_timestamp.normalized:
+        if not video:
             return
         dialog = QDialog(self)
         dialog.setWindowTitle("Edit capture date and time")
         layout = QVBoxLayout(dialog)
         layout.addWidget(QLabel("Set the actual capture time for this clip (UTC)."))
-        editor = QDateTimeEdit(QDateTime.fromString(
-            video.selected_timestamp.normalized.strftime("%Y-%m-%dT%H:%M:%SZ"), Qt.ISODate), dialog)
+        initial = QDateTime.currentDateTimeUtc()
+        if video.selected_timestamp and video.selected_timestamp.normalized:
+            initial = QDateTime.fromString(video.selected_timestamp.normalized.strftime("%Y-%m-%dT%H:%M:%SZ"), Qt.ISODate)
+        editor = QDateTimeEdit(initial, dialog)
         editor.setDisplayFormat("yyyy-MM-dd HH:mm:ss 'UTC'")
         editor.setCalendarPopup(True)
         layout.addWidget(editor)
@@ -501,6 +605,7 @@ class MainWindow(QMainWindow):
         layout.addWidget(buttons)
         if dialog.exec() == QDialog.Accepted:
             override_timestamp(video, editor.dateTime().toPython())
+            self._set_dirty()
             self._populate_table(self.videos)
             self.status_label.setText("Updated capture time for {}.".format(video.filename))
 
@@ -526,6 +631,7 @@ class MainWindow(QMainWindow):
         name = name.strip()
         for video in videos:
             video.camera = name
+        self._set_dirty()
         self._refresh_camera_filter()
         self._populate_table(self.videos)
         self.status_label.setText("Assigned {} clip{} to {}.".format(len(videos), "s" if len(videos) != 1 else "", name))
@@ -551,6 +657,7 @@ class MainWindow(QMainWindow):
             offset = timedelta(seconds=dialog.offset_seconds())
             for video in group:
                 apply_offset(video, offset)
+        self._set_dirty()
         self._populate_table(self.videos)
         self.status_label.setText("Applied {} seconds to {} clip{} in {}.".format(
             int(offset.total_seconds()), len(group), "s" if len(group) != 1 else "", reference.camera))
@@ -587,7 +694,13 @@ class MainWindow(QMainWindow):
             self.table.setRowHidden(row, not matches)
 
     def closeEvent(self, event):
+        if not self._close_pending and not self._confirm_discard():
+            event.ignore()
+            return
         if self.worker and self.worker.isRunning():
-            self.worker.requestInterruption()
-            self.worker.wait(3000)
+            self._close_pending = True
+            self._cancel_scan()
+            self.status_label.setText("Stopping scan before closing…")
+            event.ignore()
+            return
         super().closeEvent(event)
