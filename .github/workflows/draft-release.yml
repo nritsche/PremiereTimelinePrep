@@ -26,7 +26,13 @@ permissions:
   actions: read
 
 jobs:
+  secret-scan:
+    permissions:
+      contents: read
+    uses: ./.github/workflows/secret-scan.yml
+
   draft:
+    needs: secret-scan
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4

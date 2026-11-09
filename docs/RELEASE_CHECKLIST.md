@@ -7,6 +7,7 @@ complete the legal review or the Premiere integration check.
 ## Source publication
 
 - [x] Maintainer selected the standard MIT license; LICENSE and pyproject metadata agree.
+- [ ] Gitleaks passes for the release commit and full available Git history; keep the build/release scan gates enabled.
 - [ ] Review all Git history for credentials and personal data; enable GitHub secret scanning where available.
 - [ ] Confirm personal reports, exported XML, sample footage and screenshots with real paths are absent from Git history.
 - [ ] Run tests on Linux and Windows, including Python 3.11, the supported minimum.

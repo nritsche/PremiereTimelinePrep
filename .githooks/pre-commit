@@ -1,0 +1,8 @@
+#!/bin/sh
+set -eu
+scanner=$(git config --get gitleaks.path || printf '%s' gitleaks)
+if ! command -v "$scanner" >/dev/null 2>&1; then
+    echo 'Gitleaks is required. See CONTRIBUTING.md for setup.' >&2
+    exit 1
+fi
+exec "$scanner" git --pre-commit --staged --redact=100 .
