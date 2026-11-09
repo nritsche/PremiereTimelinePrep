@@ -23,6 +23,19 @@ SOURCES = [
 ]
 
 
+# Observed in the successful private source-review build 42621680460.
+# These pin candidate archive bytes; they do not establish legal correspondence.
+EXPECTED_SHA256 = {
+    'python-3.12.10.tar.xz': '07ab697474595e06f06647417d3c7fa97ded07afc1a7e4454c5639919b46eaea',
+    'qtbase-6.12.0.tar.xz': 'a951bd163c7b80fc6b8c88d7668fb56abf91c152373e13c10666763238131307',
+    'qtsvg-6.12.0.tar.xz': 'e4ab39534ec97987b1b9b60ef7f4d3253d5912a69f8c713a01753174a4029331',
+    'qtimageformats-6.12.0.tar.xz': '0943132b5db8de6b6a7f1d162682173e8763c7ed94e80fd39113292845f67762',
+    'pyside-shiboken-6.12.0.tar.xz': '099c1a597cf33c1b000e11cf68a0b82d216fb802bf81726efc720394f10c7751',
+    'ffmpeg-946fcce07b6dcd0331c8cc609192aeff5e1924f8.tar.gz': 'c8a74e6eff0d38850403ee8eff3a95721984b45a3cd25f92b8905886571fc1be',
+    'exiftool-2200871d9cef988051d2a99d67df3bda6cbb30a8.tar.gz': '0c1c0e2b9a7bb278ce3b2cad1654ac08f868a2b3c7ba95e7a4b12e4364db3069',
+}
+
+
 def extract_source_notices(archive, destination):
     """Copy source-shipped license/attribution files without extracting code."""
     copied = 0
@@ -77,6 +90,8 @@ def collect(application, destination):
                 content_type = response.headers.get('Content-Type', '')
             if 'text/html' in content_type or total < 1024:
                 raise ValueError('Expected a source archive, received an error page or empty response')
+            if digest.hexdigest() != EXPECTED_SHA256[filename]:
+                raise ValueError('Source archive changed from the recorded review hash')
             row = {'filename': filename, 'url': url, 'resolved_url': resolved,
                    'sha256': digest.hexdigest(), 'size': total, 'status': 'downloaded-needs-correspondence-review'}
             # Keep upstream terms and attribution files beside the portable app.

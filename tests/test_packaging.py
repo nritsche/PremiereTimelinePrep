@@ -17,9 +17,10 @@ def test_tool_staging_excludes_unrelated_executables_and_keeps_runtime(tmp_path)
     for name in ['ffprobe.exe', 'ffmpeg.exe', 'ffplay.exe', 'runtime.dll', 'installer.zip']:
         (source / name).write_bytes(b'fixture')
     (source.parent / 'LICENSE.txt').write_text('upstream notice', encoding='utf-8')
+    (source.parent / 'README.txt').write_text('exact upstream build versions', encoding='utf-8')
     destination = tmp_path / 'staged'
     module.copy_tool_folder(source / 'ffprobe.exe', destination, 'ffprobe.exe')
-    assert {p.name for p in destination.iterdir()} == {'ffprobe.exe', 'runtime.dll', 'LICENSE.txt'}
+    assert {p.name for p in destination.iterdir()} == {'ffprobe.exe', 'runtime.dll', 'LICENSE.txt', 'README.txt'}
     runtime = source / 'exiftool_files'
     runtime.mkdir()
     (runtime / 'perl.dll').write_bytes(b'fixture')
@@ -127,3 +128,24 @@ def test_source_notice_archive_rejects_windows_drive_paths(tmp_path):
         output.addfile(member, io.BytesIO(b'x'))
     with pytest.raises(ValueError, match='Unsafe source archive path'):
         source_module().extract_source_notices(path, tmp_path / 'notices')
+
+
+def test_changed_source_archive_is_rejected(tmp_path, monkeypatch):
+    import io
+    import json
+    module = source_module()
+    (tmp_path / 'app').mkdir()
+    manifest = {'commit': 'a' * 40, 'python': '3.12.10 (fixture)', 'qt_version': '6.12.0',
+                'packages': {'PySide6-Essentials': '6.12.0', 'shiboken6': '6.12.0'},
+                'tools': {'ffprobe': 'ffprobe version 9.0.2-essentials', 'exiftool': '13.59'}}
+    (tmp_path / 'app/build-manifest.json').write_text(json.dumps(manifest), encoding='utf-8')
+    class ChangedSource(io.BytesIO):
+        url = 'https://example.invalid/source'
+        headers = {'Content-Type': 'application/octet-stream'}
+    monkeypatch.setattr(module, 'SOURCES', [('source.tar.gz', 'https://example.invalid/source')])
+    monkeypatch.setattr(module, 'EXPECTED_SHA256', {'source.tar.gz': '0' * 64})
+    monkeypatch.setattr(module.urllib.request, 'urlopen', lambda *a, **kw: ChangedSource(b'x' * 2048))
+    report = module.collect(tmp_path / 'app', tmp_path / 'sources')
+    assert report['sources'][0]['status'] == 'unavailable'
+    assert 'changed' in report['sources'][0]['error']
+    assert not (tmp_path / 'sources/source.tar.gz').exists()

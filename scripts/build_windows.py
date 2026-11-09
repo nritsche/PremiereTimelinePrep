@@ -23,10 +23,10 @@ def copy_tool_folder(executable: Path, destination: Path, expected_name: str) ->
         if item.is_dir() and item.name.lower() == 'exiftool_files':
             shutil.copytree(item, destination / item.name, dirs_exist_ok=True)
         elif item.is_file() and (item.suffix.lower() == '.dll' or
-                                any(word in item.name.lower() for word in ('license', 'copying', 'notice'))):
+                                any(word in item.name.lower() for word in ('license', 'copying', 'notice', 'readme'))):
             shutil.copy2(item, destination / item.name)
     for item in executable.parent.parent.iterdir():
-        if item.is_file() and any(word in item.name.lower() for word in ('license', 'copying', 'notice')):
+        if item.is_file() and any(word in item.name.lower() for word in ('license', 'copying', 'notice', 'readme')):
             shutil.copy2(item, destination / item.name)
 
 

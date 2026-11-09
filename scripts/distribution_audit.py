@@ -21,7 +21,7 @@ def sha256(path):
 
 def _is_notice(name):
     value = name.lower()
-    return any(word in value for word in ('license', 'licence', 'copying', 'copyright', 'notice', 'authors'))
+    return any(word in value for word in ('license', 'licence', 'copying', 'copyright', 'notice', 'authors', 'readme'))
 
 
 def extract_notice_zip(archive, destination):

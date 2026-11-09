@@ -41,6 +41,12 @@ Python 3.12.10, FFmpeg commit `946fcce07b6dcd0331c8cc609192aeff5e1924f8`
 (linked by the Gyan 9.0.2 release page), and ExifTool 13.59 commit
 `2200871d9cef988051d2a99d67df3bda6cbb30a8`. The direct current ExifTool source
 URL returned 404 during review; the immutable upstream Git reference is used instead.
+Private review run `42621680460` successfully collected all seven primary
+archives; their observed SHA-256 values are pinned in the collector. The portable
+Windows build and its executable self-test passed. The Gyan 9.0.2 ZIP's README was
+also inspected directly; it lists external-library revisions. Builds preserve
+that upstream README alongside the tool rather than discarding it.
+
 These references are starting evidence, not proof that every binary was built
 from unmodified sources with a known complete configuration.
 
