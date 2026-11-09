@@ -16,6 +16,7 @@ from app.core.scanner import DEFAULT_EXTENSIONS
 from app.core.session_report import read_session_report, write_session_report
 from app.core.timestamp_corrector import apply_offset, override_timestamp, set_reference_time
 from app.gui.camera_correction_dialog import CameraCorrectionDialog
+from app.gui.export_review_dialog import ExportReviewDialog
 from app.gui.scan_worker import ScanWorker
 
 
@@ -155,6 +156,11 @@ class MainWindow(QMainWindow):
         review_splitter.setSizes([420, 190])
         root.addWidget(review_splitter, 1)
 
+        export_row = QHBoxLayout()
+        export_hint = QLabel("3  Check the order, then export your timeline")
+        export_hint.setObjectName("sectionTitle")
+        export_row.addWidget(export_hint, 1)
+        root.addLayout(export_row)
         footer = QHBoxLayout()
         self.status_label = QLabel("Add folders to begin.")
         self.status_label.setObjectName("status")
@@ -164,10 +170,13 @@ class MainWindow(QMainWindow):
         self.progress.setTextVisible(False)
         self.progress.hide()
         footer.addWidget(self.progress)
+        self.review_order_button = QPushButton("Review export order…")
+        self.review_order_button.setEnabled(False)
+        export_row.addWidget(self.review_order_button)
         self.export_xml_button = QPushButton("Export XML…")
         self.export_xml_button.setEnabled(False)
         self.export_xml_button.setToolTip("Experimental chronological timeline for Premiere; import validation required")
-        footer.addWidget(self.export_xml_button)
+        export_row.addWidget(self.export_xml_button)
         self.open_session_button = QPushButton("Open session…")
         footer.addWidget(self.open_session_button)
         self.export_report_button = QPushButton("Export report…")
@@ -203,6 +212,7 @@ class MainWindow(QMainWindow):
         self.add_folder_button.clicked.connect(self._add_folder)
         self.remove_folder_button.clicked.connect(self._remove_folders)
         self.scan_button.clicked.connect(self._start_scan)
+        self.review_order_button.clicked.connect(self._review_export_order)
         self.export_xml_button.clicked.connect(self._export_xml)
         self.open_session_button.clicked.connect(self._open_session)
         self.export_report_button.clicked.connect(self._export_report)
@@ -242,6 +252,7 @@ class MainWindow(QMainWindow):
         self.scan_button.setEnabled(False)
         self.export_report_button.setEnabled(False)
         self.export_xml_button.setEnabled(False)
+        self.review_order_button.setEnabled(False)
         self.add_folder_button.setEnabled(False)
         self.remove_folder_button.setEnabled(False)
         self.progress.setRange(0, 0)
@@ -263,6 +274,7 @@ class MainWindow(QMainWindow):
         self.excluded_paths.intersection_update(video.path for video in videos)
         self.export_report_button.setEnabled(bool(videos))
         self.export_xml_button.setEnabled(bool(videos))
+        self.review_order_button.setEnabled(bool(videos))
         self.tool_notices = self._collect_tool_notices(videos)
         current_camera = self.camera_filter.currentText()
         self.camera_filter.blockSignals(True)
@@ -360,21 +372,19 @@ class MainWindow(QMainWindow):
         self.status_label.setText("Opened {} clips from session{}".format(
             len(videos), " · {} media files unavailable at saved paths".format(missing) if missing else ""))
 
+    def _review_export_order(self):
+        ExportReviewDialog(self.videos, self.excluded_paths, parent=self).exec()
+
     def _export_xml(self):
         try:
             notices = timeline_rate_notices(self.videos, self.excluded_paths)
         except (ValueError, TypeError) as exc:
             QMessageBox.warning(self, "XML could not be exported", str(exc))
             return
-        if notices:
-            answer = QMessageBox.warning(
-                self, "Approximate frame timing",
-                "These clips need an approximate XML timebase. Media is not converted. "
-                "Check playback and audio sync after importing in Premiere.\n\n" + "\n".join(notices)
-                + "\n\nExport with these timebases?",
-                QMessageBox.Yes | QMessageBox.Cancel, QMessageBox.Cancel)
-            if answer != QMessageBox.Yes:
-                return
+        dialog = ExportReviewDialog(self.videos, self.excluded_paths, notices,
+                                    exporting=True, parent=self)
+        if dialog.exec() != QDialog.Accepted:
+            return
         path, _ = QFileDialog.getSaveFileName(self, "Export experimental Premiere timeline", "timeline.xml", "Final Cut Pro 7 XML (*.xml)")
         if not path:
             return

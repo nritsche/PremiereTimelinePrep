@@ -42,7 +42,9 @@ python scripts/build_windows.py --ffprobe C:\path\to\ffprobe.exe --exiftool C:\p
 
 ## Premiere interchange status
 
-Use **Export XML…** after scanning with FFprobe installed. Included clips are placed back-to-back in capture-time order, with unknown capture times last. Search filters do not change inclusion. The first included clip sets the sequence frame rate and dimensions; source rates are retained and positions use sequence frames. Embedded audio channels are exported on linked audio tracks. No media is copied or transcoded.
+Use **Review export order…** to see every included clip in the exact order that XML export uses, together with recording dates and camera sources. Unknown dates appear last. Check these dates against the event you filmed; correct individual dates or camera clocks in the main window. Search filters and table sorting do not change the exported order.
+
+Use **Export XML…** after scanning with FFprobe installed. Export first opens this same order preview, with a plain-language timing explanation and scrollable per-clip details when rates need approximation. The action buttons remain outside the scrolling details. Included clips are placed back-to-back in capture-time order, with unknown capture times last. Search filters do not change inclusion. The first included clip sets the sequence frame rate and dimensions; source rates are retained and positions use sequence frames. Embedded audio channels are exported on linked audio tracks. No media is copied or transcoded.
 
 Export uses Final Cut Pro 7 `xmeml` version 5, based on [Apple’s encoding documentation](https://developer.apple.com/library/archive/documentation/AppleApplications/Reference/FinalCutPro_XML/Basics/Basics.html). This is distinct from Final Cut Pro X `.fcpxml`, which [Premiere cannot directly import](https://helpx.adobe.com/ca/premiere/desktop/organize-media/import-files/migrate-from-final-cut-pro-x.html).
 
