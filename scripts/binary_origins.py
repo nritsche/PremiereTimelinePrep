@@ -6,6 +6,8 @@ import json
 from pathlib import Path
 import re
 import sys
+import os
+import subprocess
 from functools import lru_cache
 
 
@@ -67,6 +69,28 @@ def _pacman_package(source, digest):
     return None
 
 
+@lru_cache(maxsize=16)
+def _provider_version(directory):
+    """Version hints only; do not claim a DLL was built by a nearby compiler."""
+    directory = Path(directory)
+    options = {"creationflags": subprocess.CREATE_NO_WINDOW} if os.name == 'nt' else {}
+    for filename, arguments in [('gcc.exe', ['--version']), ('git.exe', ['version', '--build-options'])]:
+        executable = directory / filename
+        if not executable.is_file():
+            continue
+        try:
+            text = subprocess.check_output([str(executable), *arguments], timeout=10,
+                text=True, encoding='utf-8', errors='replace', stderr=subprocess.STDOUT, **options)
+        except (OSError, subprocess.SubprocessError):
+            continue
+        # Retain version/compiler evidence, not paths or arbitrary host output.
+        lines = [line for line in text.splitlines() if re.search(r'(?i)(git version|gcc|compiler:)', line)]
+        if lines:
+            return {'program': filename, 'version_lines': lines[:3],
+                    'scope': 'Nearby provider version hint; not proof of the DLL compiler version'}
+    return None
+
+
 def record_binary_origins(toc_path, application, tools_root, project_root, python_prefix=None):
     application, tools_root = Path(application), Path(tools_root).resolve()
     project_root = Path(project_root).resolve()
@@ -94,12 +118,18 @@ def record_binary_origins(toc_path, application, tools_root, project_root, pytho
             hint = 'python-installation'
         elif source.is_relative_to(project_root):
             hint = 'project-build-input'
+        elif any(part.lower() == 'git' for part in source.parts):
+            hint = 'git-for-windows-runtime'
         elif 'strawberry' in source.as_posix().lower():
             hint = 'host-strawberry-perl-installation'
         elif any(marker in source.as_posix().lower() for marker in ('msys64', 'mingw64', 'ucrt64')):
             hint = 'host-msys2-or-mingw-installation'
         row = {'path': '_internal/' + relative, 'sha256': digest, 'provider_hint': hint,
                'source_filename': source.name, 'kind': kind}
+        if hint in ('git-for-windows-runtime', 'host-strawberry-perl-installation', 'host-msys2-or-mingw-installation', 'unidentified-host-runtime'):
+            provider_version = _provider_version(source.parent)
+            if provider_version:
+                row['provider_version_hint'] = provider_version
         package = _pacman_package(source, digest)
         if package:
             row['installed_package'] = package

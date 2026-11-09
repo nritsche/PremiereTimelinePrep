@@ -7,7 +7,8 @@
       "ref": "openssl-3.5.9",
       "commit": "45e844fa2a14ec92d146bd8f5778ac130b6625fb",
       "source_url": "https://api.github.com/repos/openssl/openssl/tarball/45e844fa2a14ec92d146bd8f5778ac130b6625fb",
-      "match_scope": "Upstream version reference; provider patches and build correspondence still require review."
+      "match_scope": "Upstream version reference; provider patches and build correspondence still require review.",
+      "archive_sha256": "32662f03fc8e90bc8b8fc0acb115ed413eec5045a127e9af9f6c234bc3d0a8f2"
     },
     {
       "id": "openssl-3.0.16",
@@ -15,7 +16,8 @@
       "ref": "openssl-3.0.16",
       "commit": "fa1e5dfb142bb1c26c3c38a10aafa7a095df52e5",
       "source_url": "https://api.github.com/repos/openssl/openssl/tarball/fa1e5dfb142bb1c26c3c38a10aafa7a095df52e5",
-      "match_scope": "Upstream version reference; provider patches and build correspondence still require review."
+      "match_scope": "Upstream version reference; provider patches and build correspondence still require review.",
+      "archive_sha256": "b904db8265c3651ca1f83158cccc6de7221b883d966f520a63dc9b2beeeaa9e6"
     },
     {
       "id": "xz-5.4.6",
@@ -23,7 +25,8 @@
       "ref": "v5.4.6",
       "commit": "6e8732c5a317a349986a4078718f1d95b67072c5",
       "source_url": "https://api.github.com/repos/tukaani-project/xz/tarball/6e8732c5a317a349986a4078718f1d95b67072c5",
-      "match_scope": "Upstream version reference; provider patches and build correspondence still require review."
+      "match_scope": "Upstream version reference; provider patches and build correspondence still require review.",
+      "archive_sha256": "48cbf5a560643c9dfb90af5af6bb265ee9f6411a0c38703307d68a3e4dcaef20"
     },
     {
       "id": "xz-5.2.4",
@@ -31,7 +34,8 @@
       "ref": "v5.2.4",
       "commit": "b5be61cc06088bb07f488f9baf7d447ff47b37c1",
       "source_url": "https://api.github.com/repos/tukaani-project/xz/tarball/b5be61cc06088bb07f488f9baf7d447ff47b37c1",
-      "match_scope": "Upstream version reference; provider patches and build correspondence still require review."
+      "match_scope": "Upstream version reference; provider patches and build correspondence still require review.",
+      "archive_sha256": "ac33e0e310f45d35cb66af34e2e0013464756a86cf3f3bde6475c6e76fa1d0ed"
     },
     {
       "id": "perl-5.32.1",
@@ -39,7 +43,8 @@
       "ref": "v5.32.1",
       "commit": "df9d952d734ef94233ed84af97ca318d7972eed0",
       "source_url": "https://api.github.com/repos/Perl/perl5/tarball/df9d952d734ef94233ed84af97ca318d7972eed0",
-      "match_scope": "Upstream version reference; provider patches and build correspondence still require review."
+      "match_scope": "Upstream version reference; provider patches and build correspondence still require review.",
+      "archive_sha256": "be92fd0f3ae3428aa0c5f3f4a2854365c76c28e8a9e7cb5c9d0f139d00e4e9e2"
     },
     {
       "id": "gcc-8.3.0",
@@ -47,26 +52,30 @@
       "ref": "releases/gcc-8.3.0",
       "commit": "4c44b708f11eec6fc02456e8577708d01ca92327",
       "source_url": "https://api.github.com/repos/gcc-mirror/gcc/tarball/4c44b708f11eec6fc02456e8577708d01ca92327",
-      "match_scope": "Upstream version reference; provider patches and build correspondence still require review."
+      "match_scope": "Upstream version reference; provider patches and build correspondence still require review.",
+      "archive_sha256": "bf0d67d2d735f9064520ff24308b45970cc384c6df0001f49f1248a36ba7f839"
     },
     {
       "id": "mingw-w64-6.0.0",
       "commit": "cb090affef8ebcd8c13ffc271b4500dea3b52f33",
       "repository": "mingw-w64/mingw-w64",
       "source_url": "https://api.github.com/repos/mingw-w64/mingw-w64/tarball/cb090affef8ebcd8c13ffc271b4500dea3b52f33",
-      "match_scope": "Version identified from preserved Strawberry Perl compiler/runtime notice; provider patch/build correspondence remains open."
+      "match_scope": "Version identified from preserved Strawberry Perl compiler/runtime notice; provider patch/build correspondence remains open.",
+      "archive_sha256": "ec81950f4ddcdffe5dc25eb2f44a9d87dd405e911065ac3f89189a8e49eb1ff4"
     },
     {
       "id": "mesa-11.2.2",
       "source_url": "https://archive.mesa3d.org/older-versions/11.x/11.2.2/mesa-11.2.2.tar.xz",
       "archive_format": "tar.xz",
-      "match_scope": "Version string plus exact DLL fingerprint; Qt build patches remain to be verified."
+      "match_scope": "Version string plus exact DLL fingerprint; Qt build patches remain to be verified.",
+      "archive_sha256": "40e148812388ec7c6d7b6657d5a16e2e8dabba8b97ddfceea5197947647bdfb4"
     },
     {
       "id": "llvm-3.6.2",
       "source_url": "https://releases.llvm.org/3.6.2/llvm-3.6.2.src.tar.xz",
       "archive_format": "tar.xz",
-      "match_scope": "Version string in the exact software-renderer DLL; Qt build patches remain to be verified."
+      "match_scope": "Version string in the exact software-renderer DLL; Qt build patches remain to be verified.",
+      "archive_sha256": "f60dc158bfda6822de167e87275848969f0558b3134892ff54fced87e4667b94"
     }
   ],
   "fingerprints": [
@@ -91,5 +100,6 @@
         "llvm-3.6.2"
       ]
     }
-  ]
+  ],
+  "observed_source_run": "https://github.com/nritsche/PremiereTimelinePrep/actions/runs/42689103605"
 }

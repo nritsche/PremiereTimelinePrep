@@ -45,6 +45,8 @@ def collect_native_sources(application, destination, lock_path=None):
                         raise ValueError('Native source exceeds 512 MB limit')
                     stream.write(chunk)
                     digest.update(chunk)
+            if source.get('archive_sha256') and digest.hexdigest() != source['archive_sha256']:
+                raise ValueError('Native archive changed from its recorded review hash')
             notices = application / 'licenses' / 'native-source-notices' / source_id
             count = extract_source_notices(target, notices)
             row.update(status='source-candidate-collected-build-correspondence-open',

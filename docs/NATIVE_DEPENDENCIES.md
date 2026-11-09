@@ -23,7 +23,17 @@ source collector retrieves the observed versions separately and preserves their
 source-shipped notices. The original archive remains intact rather than being
 rewritten to claim it describes a newer binary.
 
-## What the next private review build produces
+## Collected evidence
+
+Private review build [42689103605](https://github.com/nritsche/PremiereTimelinePrep/actions/runs/42689103605)
+passed all Linux/Windows tests and its packaged-app self-test. It collected all nine
+native source archives successfully. Their observed archive hashes are now pinned
+in native-source-lock.json. The native notice extraction includes the actual
+OpenSSL 3 version materials rather than relying solely on the historical notice.
+The trace narrowed the unmatched root GCC DLL to a host MinGW installation;
+further provider identification is kept distinct from DLL compiler-version proof.
+
+## What the private review build produces
 
 - `native-dependency-review.json`: per-file source/version evidence, notice
   mismatches, and unresolved files. It never grants public distribution approval.

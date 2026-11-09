@@ -111,3 +111,13 @@ def test_native_download_failure_does_not_approve_distribution(tmp_path, monkeyp
     assert result['public_distribution_approved'] is False
     assert result['sources'][0]['status'] == 'unavailable'
     assert not list((tmp_path / 'sources').glob('*.tar.gz'))
+
+
+def test_provider_version_remains_a_hint_not_a_dll_identity(tmp_path, monkeypatch):
+    code = module('binary_origins')
+    (tmp_path / 'gcc.exe').write_bytes(b'fixture')
+    monkeypatch.setattr(code.subprocess, 'check_output', lambda *a, **kw:
+                        'gcc (provider build) 13.2.0\nCopyright\n')
+    evidence = code._provider_version(tmp_path)
+    assert evidence['version_lines'] == ['gcc (provider build) 13.2.0']
+    assert 'not proof' in evidence['scope']
