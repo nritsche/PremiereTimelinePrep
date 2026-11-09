@@ -18,6 +18,7 @@ Implemented by the release-readiness changes:
 - Standard MIT project license, full license text, and SPDX package metadata.
 - Portable shared-library packaging, full file/PE inventory and original upstream notice preservation.
 - Optional private primary-source collection and review evidence tied to the exact inventory hash.
+- Native version/source matching, historical-notice mismatch detection, and build-input origin tracing.
 
 Still required from the maintainer / target environment:
 

@@ -1,0 +1,921 @@
+{
+  "schema_version": 1,
+  "commit": "e4c7c0684f0db05d013e149092a17a1b5c066625",
+  "public_distribution_approved": false,
+  "matches": [
+    {
+      "path": "_internal/api-ms-win-core-console-l1-1-0.dll",
+      "sha256": "88ace577a9c51061cb7d1a36babbbefa48212fadc838ffde98fdfff60de18386",
+      "version": "10.0.26100.1742",
+      "status": "redistribution-terms-review",
+      "evidence": "Microsoft runtime; apply its redistribution terms, not an invented open-source license",
+      "terms_url": "https://learn.microsoft.com/en-us/visualstudio/releases/2022/redistribution"
+    },
+    {
+      "path": "_internal/api-ms-win-core-datetime-l1-1-0.dll",
+      "sha256": "1bd81dfd19204b44662510d9054852fb77c9f25c1088d647881c9b976cc16818",
+      "version": "10.0.26100.1742",
+      "status": "redistribution-terms-review",
+      "evidence": "Microsoft runtime; apply its redistribution terms, not an invented open-source license",
+      "terms_url": "https://learn.microsoft.com/en-us/visualstudio/releases/2022/redistribution"
+    },
+    {
+      "path": "_internal/api-ms-win-core-debug-l1-1-0.dll",
+      "sha256": "591358eb4d1531e9563ee0813e4301c552ce364c912ce684d16576eabf195dc3",
+      "version": "10.0.26100.1742",
+      "status": "redistribution-terms-review",
+      "evidence": "Microsoft runtime; apply its redistribution terms, not an invented open-source license",
+      "terms_url": "https://learn.microsoft.com/en-us/visualstudio/releases/2022/redistribution"
+    },
+    {
+      "path": "_internal/api-ms-win-core-errorhandling-l1-1-0.dll",
+      "sha256": "d56ce7b1cd76108ad6c137326ec694a14c99d48c3d7b0ace8c3ff4d9bcee3ce8",
+      "version": "10.0.26100.1742",
+      "status": "redistribution-terms-review",
+      "evidence": "Microsoft runtime; apply its redistribution terms, not an invented open-source license",
+      "terms_url": "https://learn.microsoft.com/en-us/visualstudio/releases/2022/redistribution"
+    },
+    {
+      "path": "_internal/api-ms-win-core-fibers-l1-1-0.dll",
+      "sha256": "91d249d7bc0e38ef6bcb17158b1fdc6dd8888dc086615c9b8b750b87e52a5fb3",
+      "version": "10.0.26100.1742",
+      "status": "redistribution-terms-review",
+      "evidence": "Microsoft runtime; apply its redistribution terms, not an invented open-source license",
+      "terms_url": "https://learn.microsoft.com/en-us/visualstudio/releases/2022/redistribution"
+    },
+    {
+      "path": "_internal/api-ms-win-core-fibers-l1-1-1.dll",
+      "sha256": "fc9d86cec621383eab636ebc87ddd3f5c19a3cb2a33d97be112c051d0b275429",
+      "version": "10.0.26100.1742",
+      "status": "redistribution-terms-review",
+      "evidence": "Microsoft runtime; apply its redistribution terms, not an invented open-source license",
+      "terms_url": "https://learn.microsoft.com/en-us/visualstudio/releases/2022/redistribution"
+    },
+    {
+      "path": "_internal/api-ms-win-core-file-l1-1-0.dll",
+      "sha256": "1ca895aba4e7435563a6b43e85eba67a0f8c74aa6a6a94d0fc48fa35535e2585",
+      "version": "10.0.26100.1742",
+      "status": "redistribution-terms-review",
+      "evidence": "Microsoft runtime; apply its redistribution terms, not an invented open-source license",
+      "terms_url": "https://learn.microsoft.com/en-us/visualstudio/releases/2022/redistribution"
+    },
+    {
+      "path": "_internal/api-ms-win-core-file-l1-2-0.dll",
+      "sha256": "4cadbc0c39da7c6722206fdcebd670abe5b8d261e7b041dd94f9397a89d1990d",
+      "version": "10.0.26100.1742",
+      "status": "redistribution-terms-review",
+      "evidence": "Microsoft runtime; apply its redistribution terms, not an invented open-source license",
+      "terms_url": "https://learn.microsoft.com/en-us/visualstudio/releases/2022/redistribution"
+    },
+    {
+      "path": "_internal/api-ms-win-core-file-l2-1-0.dll",
+      "sha256": "93c624b366ba16c643fc8933070a26f03b073ad0cf7f80173266d67536c61989",
+      "version": "10.0.26100.1742",
+      "status": "redistribution-terms-review",
+      "evidence": "Microsoft runtime; apply its redistribution terms, not an invented open-source license",
+      "terms_url": "https://learn.microsoft.com/en-us/visualstudio/releases/2022/redistribution"
+    },
+    {
+      "path": "_internal/api-ms-win-core-handle-l1-1-0.dll",
+      "sha256": "39095f59c41d76ec81bb2723d646fde4c148e7cc3402f4980d2ade95cb9c84f9",
+      "version": "10.0.26100.1742",
+      "status": "redistribution-terms-review",
+      "evidence": "Microsoft runtime; apply its redistribution terms, not an invented open-source license",
+      "terms_url": "https://learn.microsoft.com/en-us/visualstudio/releases/2022/redistribution"
+    },
+    {
+      "path": "_internal/api-ms-win-core-heap-l1-1-0.dll",
+      "sha256": "8f105771b236dbcb859de271f0a6822ce1cb79c36988dd42c9e3f6f55c5f7eb9",
+      "version": "10.0.26100.1742",
+      "status": "redistribution-terms-review",
+      "evidence": "Microsoft runtime; apply its redistribution terms, not an invented open-source license",
+      "terms_url": "https://learn.microsoft.com/en-us/visualstudio/releases/2022/redistribution"
+    },
+    {
+      "path": "_internal/api-ms-win-core-interlocked-l1-1-0.dll",
+      "sha256": "53b25e753ca785bf8b695d89dde5818a318890211dc992a89146f16658f0b606",
+      "version": "10.0.26100.1742",
+      "status": "redistribution-terms-review",
+      "evidence": "Microsoft runtime; apply its redistribution terms, not an invented open-source license",
+      "terms_url": "https://learn.microsoft.com/en-us/visualstudio/releases/2022/redistribution"
+    },
+    {
+      "path": "_internal/api-ms-win-core-kernel32-legacy-l1-1-1.dll",
+      "sha256": "a9b13a1cd1b8c19b0c6b4afcd5bb0dd29c0e2288231ac9e6db8510094ce68ba6",
+      "version": "10.0.26100.1742",
+      "status": "redistribution-terms-review",
+      "evidence": "Microsoft runtime; apply its redistribution terms, not an invented open-source license",
+      "terms_url": "https://learn.microsoft.com/en-us/visualstudio/releases/2022/redistribution"
+    },
+    {
+      "path": "_internal/api-ms-win-core-libraryloader-l1-1-0.dll",
+      "sha256": "7f39ba298b41e4963047341288cab36b6a241835ee11ba4ad70f44dacd40906c",
+      "version": "10.0.26100.1742",
+      "status": "redistribution-terms-review",
+      "evidence": "Microsoft runtime; apply its redistribution terms, not an invented open-source license",
+      "terms_url": "https://learn.microsoft.com/en-us/visualstudio/releases/2022/redistribution"
+    },
+    {
+      "path": "_internal/api-ms-win-core-localization-l1-2-0.dll",
+      "sha256": "6ee44dd0d8510dc024c9f7c79b1b9fa88c987b26b6beb6653ddd11751c34e5dc",
+      "version": "10.0.26100.1742",
+      "status": "redistribution-terms-review",
+      "evidence": "Microsoft runtime; apply its redistribution terms, not an invented open-source license",
+      "terms_url": "https://learn.microsoft.com/en-us/visualstudio/releases/2022/redistribution"
+    },
+    {
+      "path": "_internal/api-ms-win-core-memory-l1-1-0.dll",
+      "sha256": "0512a35316ec9180437f86696a84c5c06a7e4e82e050055a656e5bf9fca206f9",
+      "version": "10.0.26100.1742",
+      "status": "redistribution-terms-review",
+      "evidence": "Microsoft runtime; apply its redistribution terms, not an invented open-source license",
+      "terms_url": "https://learn.microsoft.com/en-us/visualstudio/releases/2022/redistribution"
+    },
+    {
+      "path": "_internal/api-ms-win-core-namedpipe-l1-1-0.dll",
+      "sha256": "c05f1fffe3b5a2738ea54ce9485cca026fb9635f982626fba1e1dcc531897273",
+      "version": "10.0.26100.1742",
+      "status": "redistribution-terms-review",
+      "evidence": "Microsoft runtime; apply its redistribution terms, not an invented open-source license",
+      "terms_url": "https://learn.microsoft.com/en-us/visualstudio/releases/2022/redistribution"
+    },
+    {
+      "path": "_internal/api-ms-win-core-processenvironment-l1-1-0.dll",
+      "sha256": "c4eca98c3c67b6395d5b005b00ac1eb0318b86b23aa71035a44c2b1602befba9",
+      "version": "10.0.26100.1742",
+      "status": "redistribution-terms-review",
+      "evidence": "Microsoft runtime; apply its redistribution terms, not an invented open-source license",
+      "terms_url": "https://learn.microsoft.com/en-us/visualstudio/releases/2022/redistribution"
+    },
+    {
+      "path": "_internal/api-ms-win-core-processthreads-l1-1-0.dll",
+      "sha256": "5ccb89e93d67bc3288d4e84649c5346e66e15e3d7cd65d989daf3f4cb584be9a",
+      "version": "10.0.26100.1742",
+      "status": "redistribution-terms-review",
+      "evidence": "Microsoft runtime; apply its redistribution terms, not an invented open-source license",
+      "terms_url": "https://learn.microsoft.com/en-us/visualstudio/releases/2022/redistribution"
+    },
+    {
+      "path": "_internal/api-ms-win-core-processthreads-l1-1-1.dll",
+      "sha256": "4ad565a8ba3ef0ea8ab87221ad11f83ee0bc844ce236607958406663b407333e",
+      "version": "10.0.26100.1742",
+      "status": "redistribution-terms-review",
+      "evidence": "Microsoft runtime; apply its redistribution terms, not an invented open-source license",
+      "terms_url": "https://learn.microsoft.com/en-us/visualstudio/releases/2022/redistribution"
+    },
+    {
+      "path": "_internal/api-ms-win-core-profile-l1-1-0.dll",
+      "sha256": "7809160932f44e59b021699f5bc68799eb7293ee1fa926d6fcca3c3445302e61",
+      "version": "10.0.26100.1742",
+      "status": "redistribution-terms-review",
+      "evidence": "Microsoft runtime; apply its redistribution terms, not an invented open-source license",
+      "terms_url": "https://learn.microsoft.com/en-us/visualstudio/releases/2022/redistribution"
+    },
+    {
+      "path": "_internal/api-ms-win-core-rtlsupport-l1-1-0.dll",
+      "sha256": "9dc1e91e71c7c054854bd1487cb4e6946d82c9f463430f1c4e8d1471005172b1",
+      "version": "10.0.26100.1742",
+      "status": "redistribution-terms-review",
+      "evidence": "Microsoft runtime; apply its redistribution terms, not an invented open-source license",
+      "terms_url": "https://learn.microsoft.com/en-us/visualstudio/releases/2022/redistribution"
+    },
+    {
+      "path": "_internal/api-ms-win-core-string-l1-1-0.dll",
+      "sha256": "60fc31d2a0c634412f529dba76af3b9bf991352877c6dae528186d3935704cfd",
+      "version": "10.0.26100.1742",
+      "status": "redistribution-terms-review",
+      "evidence": "Microsoft runtime; apply its redistribution terms, not an invented open-source license",
+      "terms_url": "https://learn.microsoft.com/en-us/visualstudio/releases/2022/redistribution"
+    },
+    {
+      "path": "_internal/api-ms-win-core-synch-l1-1-0.dll",
+      "sha256": "3a72b4f29f39a265d32ad12f0ce15dbf60129c840e10d84d427829ede45e78ad",
+      "version": "10.0.26100.1742",
+      "status": "redistribution-terms-review",
+      "evidence": "Microsoft runtime; apply its redistribution terms, not an invented open-source license",
+      "terms_url": "https://learn.microsoft.com/en-us/visualstudio/releases/2022/redistribution"
+    },
+    {
+      "path": "_internal/api-ms-win-core-synch-l1-2-0.dll",
+      "sha256": "efc1e4460984a73cf47a3def033af1c8f3b1dbc1a56cd27781d3aacf3e3330cb",
+      "version": "10.0.26100.1742",
+      "status": "redistribution-terms-review",
+      "evidence": "Microsoft runtime; apply its redistribution terms, not an invented open-source license",
+      "terms_url": "https://learn.microsoft.com/en-us/visualstudio/releases/2022/redistribution"
+    },
+    {
+      "path": "_internal/api-ms-win-core-sysinfo-l1-1-0.dll",
+      "sha256": "b203d862ddef1dd62bf623fc866c7f7a9c317c1c2ae30d1f52cb41f955b5698e",
+      "version": "10.0.26100.1742",
+      "status": "redistribution-terms-review",
+      "evidence": "Microsoft runtime; apply its redistribution terms, not an invented open-source license",
+      "terms_url": "https://learn.microsoft.com/en-us/visualstudio/releases/2022/redistribution"
+    },
+    {
+      "path": "_internal/api-ms-win-core-sysinfo-l1-2-0.dll",
+      "sha256": "2703635d835396afd0f138d7c73751afe7e33a24f4225d08c1690b0a371932c0",
+      "version": "10.0.26100.1742",
+      "status": "redistribution-terms-review",
+      "evidence": "Microsoft runtime; apply its redistribution terms, not an invented open-source license",
+      "terms_url": "https://learn.microsoft.com/en-us/visualstudio/releases/2022/redistribution"
+    },
+    {
+      "path": "_internal/api-ms-win-core-timezone-l1-1-0.dll",
+      "sha256": "33f4fddc181066fce06b2227bded813f95e94ed1f3d785e982c6b6b56c510c57",
+      "version": "10.0.26100.1742",
+      "status": "redistribution-terms-review",
+      "evidence": "Microsoft runtime; apply its redistribution terms, not an invented open-source license",
+      "terms_url": "https://learn.microsoft.com/en-us/visualstudio/releases/2022/redistribution"
+    },
+    {
+      "path": "_internal/api-ms-win-core-util-l1-1-0.dll",
+      "sha256": "6eda016742a6171205a387a14b3c0b331841567740376f56768f8c151724207d",
+      "version": "10.0.26100.1742",
+      "status": "redistribution-terms-review",
+      "evidence": "Microsoft runtime; apply its redistribution terms, not an invented open-source license",
+      "terms_url": "https://learn.microsoft.com/en-us/visualstudio/releases/2022/redistribution"
+    },
+    {
+      "path": "_internal/api-ms-win-crt-conio-l1-1-0.dll",
+      "sha256": "b762061b688aae679afe788904d2c9970f74a7dac98f3b42463d08f25e483d3f",
+      "version": "10.0.26100.1742",
+      "status": "redistribution-terms-review",
+      "evidence": "Microsoft runtime; apply its redistribution terms, not an invented open-source license",
+      "terms_url": "https://learn.microsoft.com/en-us/visualstudio/releases/2022/redistribution"
+    },
+    {
+      "path": "_internal/api-ms-win-crt-convert-l1-1-0.dll",
+      "sha256": "ebb2ae5535a64f65daeab8235585114fc9dd2cf1a49f5852d446250b998b6ae4",
+      "version": "10.0.26100.1742",
+      "status": "redistribution-terms-review",
+      "evidence": "Microsoft runtime; apply its redistribution terms, not an invented open-source license",
+      "terms_url": "https://learn.microsoft.com/en-us/visualstudio/releases/2022/redistribution"
+    },
+    {
+      "path": "_internal/api-ms-win-crt-environment-l1-1-0.dll",
+      "sha256": "17d63275d00bdd8670422b95bd264c532998e0a1b041079e54fce4b6b7a55819",
+      "version": "10.0.26100.1742",
+      "status": "redistribution-terms-review",
+      "evidence": "Microsoft runtime; apply its redistribution terms, not an invented open-source license",
+      "terms_url": "https://learn.microsoft.com/en-us/visualstudio/releases/2022/redistribution"
+    },
+    {
+      "path": "_internal/api-ms-win-crt-filesystem-l1-1-0.dll",
+      "sha256": "9a9e2a65a281644e368d0f272b95ba5f6b445d1c35910d06056c5ebeb77402db",
+      "version": "10.0.26100.1742",
+      "status": "redistribution-terms-review",
+      "evidence": "Microsoft runtime; apply its redistribution terms, not an invented open-source license",
+      "terms_url": "https://learn.microsoft.com/en-us/visualstudio/releases/2022/redistribution"
+    },
+    {
+      "path": "_internal/api-ms-win-crt-heap-l1-1-0.dll",
+      "sha256": "bab9ac3ec83e380ae51e4295ef3bf2c738627812d3a49d1e713661abbc8dc57a",
+      "version": "10.0.26100.1742",
+      "status": "redistribution-terms-review",
+      "evidence": "Microsoft runtime; apply its redistribution terms, not an invented open-source license",
+      "terms_url": "https://learn.microsoft.com/en-us/visualstudio/releases/2022/redistribution"
+    },
+    {
+      "path": "_internal/api-ms-win-crt-locale-l1-1-0.dll",
+      "sha256": "bd14c67ea28e21d6257ad780a37122c9b5773f69e693f5db6bffaee4d839526e",
+      "version": "10.0.26100.1742",
+      "status": "redistribution-terms-review",
+      "evidence": "Microsoft runtime; apply its redistribution terms, not an invented open-source license",
+      "terms_url": "https://learn.microsoft.com/en-us/visualstudio/releases/2022/redistribution"
+    },
+    {
+      "path": "_internal/api-ms-win-crt-math-l1-1-0.dll",
+      "sha256": "606d66d82db562ea7979179d06486a0f94d079941d26b80a1e2c49d29959df6f",
+      "version": "10.0.26100.1742",
+      "status": "redistribution-terms-review",
+      "evidence": "Microsoft runtime; apply its redistribution terms, not an invented open-source license",
+      "terms_url": "https://learn.microsoft.com/en-us/visualstudio/releases/2022/redistribution"
+    },
+    {
+      "path": "_internal/api-ms-win-crt-multibyte-l1-1-0.dll",
+      "sha256": "95f49efbe8107786733fa7c474025cf3fee0ac632f240367b296c736d06572aa",
+      "version": "10.0.26100.1742",
+      "status": "redistribution-terms-review",
+      "evidence": "Microsoft runtime; apply its redistribution terms, not an invented open-source license",
+      "terms_url": "https://learn.microsoft.com/en-us/visualstudio/releases/2022/redistribution"
+    },
+    {
+      "path": "_internal/api-ms-win-crt-private-l1-1-0.dll",
+      "sha256": "1bc82bed6143d2bf1b6b08a7809f4a5e29317d6fddd338a7da3c0223522e4bbf",
+      "version": "10.0.26100.1742",
+      "status": "redistribution-terms-review",
+      "evidence": "Microsoft runtime; apply its redistribution terms, not an invented open-source license",
+      "terms_url": "https://learn.microsoft.com/en-us/visualstudio/releases/2022/redistribution"
+    },
+    {
+      "path": "_internal/api-ms-win-crt-process-l1-1-0.dll",
+      "sha256": "f6156b1020380ec4f0e48577ebedaaef5fb1ab1f337d8b4e72e6a33a7567a9cc",
+      "version": "10.0.26100.1742",
+      "status": "redistribution-terms-review",
+      "evidence": "Microsoft runtime; apply its redistribution terms, not an invented open-source license",
+      "terms_url": "https://learn.microsoft.com/en-us/visualstudio/releases/2022/redistribution"
+    },
+    {
+      "path": "_internal/api-ms-win-crt-runtime-l1-1-0.dll",
+      "sha256": "c5902934d026d7e15fbe9917d474f3322846a41a25e66f4b2b1f758801879f4b",
+      "version": "10.0.26100.1742",
+      "status": "redistribution-terms-review",
+      "evidence": "Microsoft runtime; apply its redistribution terms, not an invented open-source license",
+      "terms_url": "https://learn.microsoft.com/en-us/visualstudio/releases/2022/redistribution"
+    },
+    {
+      "path": "_internal/api-ms-win-crt-stdio-l1-1-0.dll",
+      "sha256": "a9c5a153d8c0286f9b41a2b1c65854ad9e6471b8755b7de87bae4470e60bcab6",
+      "version": "10.0.26100.1742",
+      "status": "redistribution-terms-review",
+      "evidence": "Microsoft runtime; apply its redistribution terms, not an invented open-source license",
+      "terms_url": "https://learn.microsoft.com/en-us/visualstudio/releases/2022/redistribution"
+    },
+    {
+      "path": "_internal/api-ms-win-crt-string-l1-1-0.dll",
+      "sha256": "25b8f83a7767211b11132775a0e27a45aa4ec8ab4e6572599f9c172ae3606b40",
+      "version": "10.0.26100.1742",
+      "status": "redistribution-terms-review",
+      "evidence": "Microsoft runtime; apply its redistribution terms, not an invented open-source license",
+      "terms_url": "https://learn.microsoft.com/en-us/visualstudio/releases/2022/redistribution"
+    },
+    {
+      "path": "_internal/api-ms-win-crt-time-l1-1-0.dll",
+      "sha256": "7c7f6393f06de11750adb09cc5698ae55cd9fb27b2e51e207286feb1b5b2b156",
+      "version": "10.0.26100.1742",
+      "status": "redistribution-terms-review",
+      "evidence": "Microsoft runtime; apply its redistribution terms, not an invented open-source license",
+      "terms_url": "https://learn.microsoft.com/en-us/visualstudio/releases/2022/redistribution"
+    },
+    {
+      "path": "_internal/api-ms-win-crt-utility-l1-1-0.dll",
+      "sha256": "d8ba5f17b9ffcbf3aeaf3fa1da226832d2fa90f81acce0cd669464e76ce434ac",
+      "version": "10.0.26100.1742",
+      "status": "redistribution-terms-review",
+      "evidence": "Microsoft runtime; apply its redistribution terms, not an invented open-source license",
+      "terms_url": "https://learn.microsoft.com/en-us/visualstudio/releases/2022/redistribution"
+    },
+    {
+      "path": "_internal/libcrypto-3-x64.dll",
+      "sha256": "d51f2b081e5ac0f94c2bf15650a6b55cf48da1de8c313c9f90003d9ed08ccc9e",
+      "version": "3.5.9",
+      "evidence": "Windows PE version metadata",
+      "status": "version-reference-matched-build-review-open",
+      "source_id": "openssl-3.5.9",
+      "source": {
+        "id": "openssl-3.5.9",
+        "repository": "openssl/openssl",
+        "ref": "openssl-3.5.9",
+        "commit": "45e844fa2a14ec92d146bd8f5778ac130b6625fb",
+        "source_url": "https://api.github.com/repos/openssl/openssl/tarball/45e844fa2a14ec92d146bd8f5778ac130b6625fb",
+        "match_scope": "Upstream version reference; provider patches and build correspondence still require review."
+      }
+    },
+    {
+      "path": "_internal/libcrypto-3.dll",
+      "sha256": "ccfffddcd3defb8d899026298af9af43bc186130f8483d77e97c93233d5f27d7",
+      "version": "3.0.16",
+      "evidence": "Windows PE version metadata",
+      "status": "version-reference-matched-build-review-open",
+      "source_id": "openssl-3.0.16",
+      "source": {
+        "id": "openssl-3.0.16",
+        "repository": "openssl/openssl",
+        "ref": "openssl-3.0.16",
+        "commit": "fa1e5dfb142bb1c26c3c38a10aafa7a095df52e5",
+        "source_url": "https://api.github.com/repos/openssl/openssl/tarball/fa1e5dfb142bb1c26c3c38a10aafa7a095df52e5",
+        "match_scope": "Upstream version reference; provider patches and build correspondence still require review."
+      }
+    },
+    {
+      "path": "_internal/libgcc_s_seh-1.dll",
+      "sha256": "9e48a39710d35d506edcb0b12707872416ae8fd2ed8e92088eef0c5c2375a264",
+      "version": null,
+      "evidence": "Different bytes from staged Perl runtime; do not assign its compiler version to this DLL",
+      "status": "source-reference-unresolved"
+    },
+    {
+      "path": "_internal/liblzma-5__.dll",
+      "sha256": "2e08845a8f48d1320116d2f0b9d7403a7bc9b461bd4d37bfb2d0af8295ded33e",
+      "version": "5.4.6",
+      "evidence": "Windows PE version metadata",
+      "status": "version-reference-matched-build-review-open",
+      "source_id": "xz-5.4.6",
+      "source": {
+        "id": "xz-5.4.6",
+        "repository": "tukaani-project/xz",
+        "ref": "v5.4.6",
+        "commit": "6e8732c5a317a349986a4078718f1d95b67072c5",
+        "source_url": "https://api.github.com/repos/tukaani-project/xz/tarball/6e8732c5a317a349986a4078718f1d95b67072c5",
+        "match_scope": "Upstream version reference; provider patches and build correspondence still require review."
+      }
+    },
+    {
+      "path": "_internal/libssl-3-x64.dll",
+      "sha256": "a2cb46897a5365a740c8f898bf1b9119ba23f01807ad0ba1efb69a9997b43ba0",
+      "version": "3.5.9",
+      "evidence": "Windows PE version metadata",
+      "status": "version-reference-matched-build-review-open",
+      "source_id": "openssl-3.5.9",
+      "source": {
+        "id": "openssl-3.5.9",
+        "repository": "openssl/openssl",
+        "ref": "openssl-3.5.9",
+        "commit": "45e844fa2a14ec92d146bd8f5778ac130b6625fb",
+        "source_url": "https://api.github.com/repos/openssl/openssl/tarball/45e844fa2a14ec92d146bd8f5778ac130b6625fb",
+        "match_scope": "Upstream version reference; provider patches and build correspondence still require review."
+      }
+    },
+    {
+      "path": "_internal/libssl-3.dll",
+      "sha256": "007142039f04d04e0ed607bda53de095e5bc6a8a10d26ecedde94ea7d2d7eefe",
+      "version": "3.0.16",
+      "evidence": "Windows PE version metadata",
+      "status": "version-reference-matched-build-review-open",
+      "source_id": "openssl-3.0.16",
+      "source": {
+        "id": "openssl-3.0.16",
+        "repository": "openssl/openssl",
+        "ref": "openssl-3.0.16",
+        "commit": "fa1e5dfb142bb1c26c3c38a10aafa7a095df52e5",
+        "source_url": "https://api.github.com/repos/openssl/openssl/tarball/fa1e5dfb142bb1c26c3c38a10aafa7a095df52e5",
+        "match_scope": "Upstream version reference; provider patches and build correspondence still require review."
+      }
+    },
+    {
+      "path": "_internal/libstdc++-6.dll",
+      "sha256": "03ad55828067fad4d24932ebb7a5b45e40c96255238775a6e02b1478e3b31d87",
+      "version": "8.3.0",
+      "evidence": "Compiler identified by Perl -V; exact byte match to staged runtime (provider patches still require matching)",
+      "status": "version-reference-matched-build-review-open",
+      "source_id": "gcc-8.3.0",
+      "source": {
+        "id": "gcc-8.3.0",
+        "repository": "gcc-mirror/gcc",
+        "ref": "releases/gcc-8.3.0",
+        "commit": "4c44b708f11eec6fc02456e8577708d01ca92327",
+        "source_url": "https://api.github.com/repos/gcc-mirror/gcc/tarball/4c44b708f11eec6fc02456e8577708d01ca92327",
+        "match_scope": "Upstream version reference; provider patches and build correspondence still require review."
+      }
+    },
+    {
+      "path": "_internal/libwinpthread-1.dll",
+      "sha256": "0d9f9c09d4219d6c74930de38e35c454add54ba7117748f8b4f65f8eac624a96",
+      "version": "6.0.0",
+      "evidence": "Preserved upstream runtime notice and exact byte match to staged runtime",
+      "status": "version-reference-matched-build-review-open",
+      "source_id": "mingw-w64-6.0.0",
+      "source": {
+        "id": "mingw-w64-6.0.0",
+        "commit": "cb090affef8ebcd8c13ffc271b4500dea3b52f33",
+        "repository": "mingw-w64/mingw-w64",
+        "source_url": "https://api.github.com/repos/mingw-w64/mingw-w64/tarball/cb090affef8ebcd8c13ffc271b4500dea3b52f33",
+        "match_scope": "Version identified from preserved Strawberry Perl compiler/runtime notice; provider patch/build correspondence remains open."
+      }
+    },
+    {
+      "path": "_internal/perl532.dll",
+      "sha256": "cfb80cfad6b868dab14f6a12083e4f3cb5714ac23b1b0e5a96f09144b116ab4c",
+      "version": "5.32.1",
+      "evidence": "Perl -V and exact byte match to the staged Perl runtime",
+      "status": "version-reference-matched-build-review-open",
+      "source_id": "perl-5.32.1",
+      "source": {
+        "id": "perl-5.32.1",
+        "repository": "Perl/perl5",
+        "ref": "v5.32.1",
+        "commit": "df9d952d734ef94233ed84af97ca318d7972eed0",
+        "source_url": "https://api.github.com/repos/Perl/perl5/tarball/df9d952d734ef94233ed84af97ca318d7972eed0",
+        "match_scope": "Upstream version reference; provider patches and build correspondence still require review."
+      }
+    },
+    {
+      "path": "_internal/PySide6/MSVCP140.dll",
+      "sha256": "f6f1d55bfd64027820ddce48f9cd8cf46d53bfa34047e6acf4ef348d492a05cb",
+      "version": "14.44.35211.0",
+      "status": "redistribution-terms-review",
+      "evidence": "Microsoft runtime; apply its redistribution terms, not an invented open-source license",
+      "terms_url": "https://learn.microsoft.com/en-us/visualstudio/releases/2022/redistribution"
+    },
+    {
+      "path": "_internal/PySide6/MSVCP140_1.dll",
+      "sha256": "2be87527c41e1ba8aff48e326e0adcd4743516e0bbcc9304986c726e27de6aca",
+      "version": "14.44.35211.0",
+      "status": "redistribution-terms-review",
+      "evidence": "Microsoft runtime; apply its redistribution terms, not an invented open-source license",
+      "terms_url": "https://learn.microsoft.com/en-us/visualstudio/releases/2022/redistribution"
+    },
+    {
+      "path": "_internal/PySide6/MSVCP140_2.dll",
+      "sha256": "6a72ed8a87eae1671640bd1ca98eccb989f1772ae46ab84594e385bf6d4ac4fb",
+      "version": "14.44.35211.0",
+      "status": "redistribution-terms-review",
+      "evidence": "Microsoft runtime; apply its redistribution terms, not an invented open-source license",
+      "terms_url": "https://learn.microsoft.com/en-us/visualstudio/releases/2022/redistribution"
+    },
+    {
+      "path": "_internal/PySide6/VCRUNTIME140.dll",
+      "sha256": "a36e0cb185eb89533ed96d4568138f86a1315756a8b2644c5963a8ce23e32101",
+      "version": "14.44.35211.0",
+      "status": "redistribution-terms-review",
+      "evidence": "Microsoft runtime; apply its redistribution terms, not an invented open-source license",
+      "terms_url": "https://learn.microsoft.com/en-us/visualstudio/releases/2022/redistribution"
+    },
+    {
+      "path": "_internal/PySide6/VCRUNTIME140_1.dll",
+      "sha256": "302b1e160e858602490a55e32ae2e29ddfc0bec2a188e19550cb655cdaa58f9c",
+      "version": "14.44.35211.0",
+      "status": "redistribution-terms-review",
+      "evidence": "Microsoft runtime; apply its redistribution terms, not an invented open-source license",
+      "terms_url": "https://learn.microsoft.com/en-us/visualstudio/releases/2022/redistribution"
+    },
+    {
+      "path": "_internal/shiboken6/MSVCP140.dll",
+      "sha256": "1ba4d7c0a95d375da138a057a57593b33510ad5bda6c5e2686afd68faa5b4231",
+      "version": "14.44.35211.0",
+      "status": "redistribution-terms-review",
+      "evidence": "Microsoft runtime; apply its redistribution terms, not an invented open-source license",
+      "terms_url": "https://learn.microsoft.com/en-us/visualstudio/releases/2022/redistribution"
+    },
+    {
+      "path": "_internal/shiboken6/VCRUNTIME140.dll",
+      "sha256": "e7be9112ee9a5b9f44b44bff24cb761cca9b1ed7550b612f77b70edfcf5fdabf",
+      "version": "14.44.35211.0",
+      "status": "redistribution-terms-review",
+      "evidence": "Microsoft runtime; apply its redistribution terms, not an invented open-source license",
+      "terms_url": "https://learn.microsoft.com/en-us/visualstudio/releases/2022/redistribution"
+    },
+    {
+      "path": "_internal/shiboken6/VCRUNTIME140_1.dll",
+      "sha256": "f02cd4a862b85a9a3153d27e15e5a213f5df8e3d77004ed2e87b8a7e8873d97c",
+      "version": "14.44.35211.0",
+      "status": "redistribution-terms-review",
+      "evidence": "Microsoft runtime; apply its redistribution terms, not an invented open-source license",
+      "terms_url": "https://learn.microsoft.com/en-us/visualstudio/releases/2022/redistribution"
+    },
+    {
+      "path": "_internal/tools/exiftool/exiftool_files/libgcc_s_seh-1.dll",
+      "sha256": "5c67505c405f717d59ff2c583a11f54300dc9bf1577713b5dbbd00588c957325",
+      "version": "8.3.0",
+      "evidence": "Compiler identified by Perl -V; exact byte match to staged runtime (provider patches still require matching)",
+      "status": "version-reference-matched-build-review-open",
+      "source_id": "gcc-8.3.0",
+      "source": {
+        "id": "gcc-8.3.0",
+        "repository": "gcc-mirror/gcc",
+        "ref": "releases/gcc-8.3.0",
+        "commit": "4c44b708f11eec6fc02456e8577708d01ca92327",
+        "source_url": "https://api.github.com/repos/gcc-mirror/gcc/tarball/4c44b708f11eec6fc02456e8577708d01ca92327",
+        "match_scope": "Upstream version reference; provider patches and build correspondence still require review."
+      }
+    },
+    {
+      "path": "_internal/tools/exiftool/exiftool_files/liblzma-5__.dll",
+      "sha256": "f8863edc9c330456f1914ab054ef1ec839042ca3e5f172019c53760880d550e0",
+      "version": "5.2.4",
+      "evidence": "Windows PE version metadata",
+      "status": "version-reference-matched-build-review-open",
+      "source_id": "xz-5.2.4",
+      "source": {
+        "id": "xz-5.2.4",
+        "repository": "tukaani-project/xz",
+        "ref": "v5.2.4",
+        "commit": "b5be61cc06088bb07f488f9baf7d447ff47b37c1",
+        "source_url": "https://api.github.com/repos/tukaani-project/xz/tarball/b5be61cc06088bb07f488f9baf7d447ff47b37c1",
+        "match_scope": "Upstream version reference; provider patches and build correspondence still require review."
+      }
+    },
+    {
+      "path": "_internal/tools/exiftool/exiftool_files/libstdc++-6.dll",
+      "sha256": "03ad55828067fad4d24932ebb7a5b45e40c96255238775a6e02b1478e3b31d87",
+      "version": "8.3.0",
+      "evidence": "Compiler identified by Perl -V; exact byte match to staged runtime (provider patches still require matching)",
+      "status": "version-reference-matched-build-review-open",
+      "source_id": "gcc-8.3.0",
+      "source": {
+        "id": "gcc-8.3.0",
+        "repository": "gcc-mirror/gcc",
+        "ref": "releases/gcc-8.3.0",
+        "commit": "4c44b708f11eec6fc02456e8577708d01ca92327",
+        "source_url": "https://api.github.com/repos/gcc-mirror/gcc/tarball/4c44b708f11eec6fc02456e8577708d01ca92327",
+        "match_scope": "Upstream version reference; provider patches and build correspondence still require review."
+      }
+    },
+    {
+      "path": "_internal/tools/exiftool/exiftool_files/libwinpthread-1.dll",
+      "sha256": "0d9f9c09d4219d6c74930de38e35c454add54ba7117748f8b4f65f8eac624a96",
+      "version": "6.0.0",
+      "evidence": "Preserved upstream runtime notice and exact byte match to staged runtime",
+      "status": "version-reference-matched-build-review-open",
+      "source_id": "mingw-w64-6.0.0",
+      "source": {
+        "id": "mingw-w64-6.0.0",
+        "commit": "cb090affef8ebcd8c13ffc271b4500dea3b52f33",
+        "repository": "mingw-w64/mingw-w64",
+        "source_url": "https://api.github.com/repos/mingw-w64/mingw-w64/tarball/cb090affef8ebcd8c13ffc271b4500dea3b52f33",
+        "match_scope": "Version identified from preserved Strawberry Perl compiler/runtime notice; provider patch/build correspondence remains open."
+      }
+    },
+    {
+      "path": "_internal/tools/exiftool/exiftool_files/perl532.dll",
+      "sha256": "cfb80cfad6b868dab14f6a12083e4f3cb5714ac23b1b0e5a96f09144b116ab4c",
+      "version": "5.32.1",
+      "evidence": "Perl -V and exact byte match to the staged Perl runtime",
+      "status": "version-reference-matched-build-review-open",
+      "source_id": "perl-5.32.1",
+      "source": {
+        "id": "perl-5.32.1",
+        "repository": "Perl/perl5",
+        "ref": "v5.32.1",
+        "commit": "df9d952d734ef94233ed84af97ca318d7972eed0",
+        "source_url": "https://api.github.com/repos/Perl/perl5/tarball/df9d952d734ef94233ed84af97ca318d7972eed0",
+        "match_scope": "Upstream version reference; provider patches and build correspondence still require review."
+      }
+    },
+    {
+      "path": "_internal/ucrtbase.dll",
+      "sha256": "2e5fb14b7bf8540278f3614a12f0226e56a7cc9e64b81cbd976c6fcf2f71cbfb",
+      "version": "10.0.26100.1742",
+      "status": "redistribution-terms-review",
+      "evidence": "Microsoft runtime; apply its redistribution terms, not an invented open-source license",
+      "terms_url": "https://learn.microsoft.com/en-us/visualstudio/releases/2022/redistribution"
+    },
+    {
+      "path": "_internal/VCRUNTIME140.dll",
+      "sha256": "052ad6a20d375957e82aa6a3c441ea548d89be0981516ca7eb306e063d5027f4",
+      "version": "14.42.34438.0",
+      "status": "redistribution-terms-review",
+      "evidence": "Microsoft runtime; apply its redistribution terms, not an invented open-source license",
+      "terms_url": "https://learn.microsoft.com/en-us/visualstudio/releases/2022/redistribution"
+    },
+    {
+      "path": "_internal/VCRUNTIME140_1.dll",
+      "sha256": "6a99bc0128e0c7d6cbbf615fcc26909565e17d4ca3451b97f8987f9c6acbc6c8",
+      "version": "14.42.34438.0",
+      "status": "redistribution-terms-review",
+      "evidence": "Microsoft runtime; apply its redistribution terms, not an invented open-source license",
+      "terms_url": "https://learn.microsoft.com/en-us/visualstudio/releases/2022/redistribution"
+    },
+    {
+      "path": "_internal/PySide6/opengl32sw.dll",
+      "sha256": "18aedc7a4b610f53bcc7b7a5c5ed9293c7e86f030e3273ad54ed3bb1ebd36702",
+      "components": [
+        {
+          "name": "Mesa",
+          "version": "11.2.2"
+        },
+        {
+          "name": "LLVM",
+          "version": "3.6.2"
+        }
+      ],
+      "evidence": "Version strings extracted from the DLL; archive byte hash matches the portable build.",
+      "build_instructions": "https://wiki.qt.io/MesaLlvmpipe",
+      "status": "version-identified-build-correspondence-open",
+      "source_ids": [
+        "mesa-11.2.2",
+        "llvm-3.6.2"
+      ],
+      "observed_sha256": "18aedc7a4b610f53bcc7b7a5c5ed9293c7e86f030e3273ad54ed3bb1ebd36702"
+    }
+  ],
+  "notice_mismatches": [
+    {
+      "path": "licenses/upstream/tools/exiftool/exiftool_files/Strawberry-Perl-notices/openssl/_INFO_",
+      "reported_package": "openssl-1.1.1i",
+      "observed_openssl_versions": [
+        "3.0.16",
+        "3.5.9"
+      ],
+      "status": "historical-notice-does-not-identify-current-openssl-dlls"
+    }
+  ],
+  "ffprobe_external_libraries": [
+    {
+      "name": "AMF",
+      "reported_version": "v1.5.2-2-gc35f613",
+      "evidence": "_internal/tools/ffprobe/README.txt",
+      "status": "version-reported-source-build-match-open"
+    },
+    {
+      "name": "aom",
+      "reported_version": "v3.15.0-25-g023743a7d7",
+      "evidence": "_internal/tools/ffprobe/README.txt",
+      "status": "version-reported-source-build-match-open"
+    },
+    {
+      "name": "AviSynthPlus",
+      "reported_version": "v3.7.5-383-g5c82777b",
+      "evidence": "_internal/tools/ffprobe/README.txt",
+      "status": "version-reported-source-build-match-open"
+    },
+    {
+      "name": "cairo",
+      "reported_version": "1.18.5",
+      "evidence": "_internal/tools/ffprobe/README.txt",
+      "status": "version-reported-source-build-match-open"
+    },
+    {
+      "name": "ffnvcodec",
+      "reported_version": "n13.1.15.0-1-geddcea9",
+      "evidence": "_internal/tools/ffprobe/README.txt",
+      "status": "version-reported-source-build-match-open"
+    },
+    {
+      "name": "freetype",
+      "reported_version": "VER-2-14-3",
+      "evidence": "_internal/tools/ffprobe/README.txt",
+      "status": "version-reported-source-build-match-open"
+    },
+    {
+      "name": "fribidi",
+      "reported_version": "v1.0.16-19-gc928e4c",
+      "evidence": "_internal/tools/ffprobe/README.txt",
+      "status": "version-reported-source-build-match-open"
+    },
+    {
+      "name": "gsm",
+      "reported_version": "1.0.24",
+      "evidence": "_internal/tools/ffprobe/README.txt",
+      "status": "version-reported-source-build-match-open"
+    },
+    {
+      "name": "harfbuzz",
+      "reported_version": "14.4.0-108-g64e2b532",
+      "evidence": "_internal/tools/ffprobe/README.txt",
+      "status": "version-reported-source-build-match-open"
+    },
+    {
+      "name": "lame",
+      "reported_version": "3.100",
+      "evidence": "_internal/tools/ffprobe/README.txt",
+      "status": "version-reported-source-build-match-open"
+    },
+    {
+      "name": "libass",
+      "reported_version": "0.17.5-8-gb2fe9d8",
+      "evidence": "_internal/tools/ffprobe/README.txt",
+      "status": "version-reported-source-build-match-open"
+    },
+    {
+      "name": "libgme",
+      "reported_version": "0.6.6",
+      "evidence": "_internal/tools/ffprobe/README.txt",
+      "status": "version-reported-source-build-match-open"
+    },
+    {
+      "name": "libopencore-amrnb",
+      "reported_version": "0.1.6",
+      "evidence": "_internal/tools/ffprobe/README.txt",
+      "status": "version-reported-source-build-match-open"
+    },
+    {
+      "name": "libopencore-amrwb",
+      "reported_version": "0.1.6",
+      "evidence": "_internal/tools/ffprobe/README.txt",
+      "status": "version-reported-source-build-match-open"
+    },
+    {
+      "name": "libssh",
+      "reported_version": "0.12.2",
+      "evidence": "_internal/tools/ffprobe/README.txt",
+      "status": "version-reported-source-build-match-open"
+    },
+    {
+      "name": "libtheora",
+      "reported_version": "v1.2.0",
+      "evidence": "_internal/tools/ffprobe/README.txt",
+      "status": "version-reported-source-build-match-open"
+    },
+    {
+      "name": "libwebp",
+      "reported_version": "v1.6.0-249-g1f34635",
+      "evidence": "_internal/tools/ffprobe/README.txt",
+      "status": "version-reported-source-build-match-open"
+    },
+    {
+      "name": "openal-soft",
+      "reported_version": "1.25.2-48-g7532541",
+      "evidence": "_internal/tools/ffprobe/README.txt",
+      "status": "version-reported-source-build-match-open"
+    },
+    {
+      "name": "openjpeg2",
+      "reported_version": "2.5.4",
+      "evidence": "_internal/tools/ffprobe/README.txt",
+      "status": "version-reported-source-build-match-open"
+    },
+    {
+      "name": "openmpt",
+      "reported_version": "libopenmpt-0.6.30-3-g6c0a06bc",
+      "evidence": "_internal/tools/ffprobe/README.txt",
+      "status": "version-reported-source-build-match-open"
+    },
+    {
+      "name": "opus",
+      "reported_version": "v1.6.1-68-g503d81b1",
+      "evidence": "_internal/tools/ffprobe/README.txt",
+      "status": "version-reported-source-build-match-open"
+    },
+    {
+      "name": "rubberband",
+      "reported_version": "v4.0.0",
+      "evidence": "_internal/tools/ffprobe/README.txt",
+      "status": "version-reported-source-build-match-open"
+    },
+    {
+      "name": "SDL",
+      "reported_version": "release-2.32.0-234-gb90ac9502",
+      "evidence": "_internal/tools/ffprobe/README.txt",
+      "status": "version-reported-source-build-match-open"
+    },
+    {
+      "name": "speex",
+      "reported_version": "Speex-1.2.1-51-g0589522",
+      "evidence": "_internal/tools/ffprobe/README.txt",
+      "status": "version-reported-source-build-match-open"
+    },
+    {
+      "name": "srt",
+      "reported_version": "v1.5.7-7-gcae8f62",
+      "evidence": "_internal/tools/ffprobe/README.txt",
+      "status": "version-reported-source-build-match-open"
+    },
+    {
+      "name": "VAAPI",
+      "reported_version": "2.25.0.",
+      "evidence": "_internal/tools/ffprobe/README.txt",
+      "status": "version-reported-source-build-match-open"
+    },
+    {
+      "name": "vidstab",
+      "reported_version": "v1.1.2-214-ge2445c4",
+      "evidence": "_internal/tools/ffprobe/README.txt",
+      "status": "version-reported-source-build-match-open"
+    },
+    {
+      "name": "vmaf",
+      "reported_version": "v3.2.0-13-gf85a8536",
+      "evidence": "_internal/tools/ffprobe/README.txt",
+      "status": "version-reported-source-build-match-open"
+    },
+    {
+      "name": "vo-amrwbenc",
+      "reported_version": "0.1.3",
+      "evidence": "_internal/tools/ffprobe/README.txt",
+      "status": "version-reported-source-build-match-open"
+    },
+    {
+      "name": "vorbis",
+      "reported_version": "v1.3.7-37-g1b75110b",
+      "evidence": "_internal/tools/ffprobe/README.txt",
+      "status": "version-reported-source-build-match-open"
+    },
+    {
+      "name": "VPL",
+      "reported_version": "2.17",
+      "evidence": "_internal/tools/ffprobe/README.txt",
+      "status": "version-reported-source-build-match-open"
+    },
+    {
+      "name": "vpx",
+      "reported_version": "v1.17.0-57-gd2413e2ca",
+      "evidence": "_internal/tools/ffprobe/README.txt",
+      "status": "version-reported-source-build-match-open"
+    },
+    {
+      "name": "x264",
+      "reported_version": "v0.165.3223",
+      "evidence": "_internal/tools/ffprobe/README.txt",
+      "status": "version-reported-source-build-match-open"
+    },
+    {
+      "name": "x265",
+      "reported_version": "4.3-45-g116b875",
+      "evidence": "_internal/tools/ffprobe/README.txt",
+      "status": "version-reported-source-build-match-open"
+    },
+    {
+      "name": "xvid",
+      "reported_version": "v1.3.7",
+      "evidence": "_internal/tools/ffprobe/README.txt",
+      "status": "version-reported-source-build-match-open"
+    },
+    {
+      "name": "zeromq",
+      "reported_version": "4.3.5",
+      "evidence": "_internal/tools/ffprobe/README.txt",
+      "status": "version-reported-source-build-match-open"
+    },
+    {
+      "name": "zimg",
+      "reported_version": "release-3.0.6-253-g67e0603",
+      "evidence": "_internal/tools/ffprobe/README.txt",
+      "status": "version-reported-source-build-match-open"
+    }
+  ],
+  "scope": "Version/source evidence only. This does not certify binary correspondence or license compliance.",
+  "inventory_sha256": "ee16d0a6ffae2f98346a5efc5cdf47888d94199b5701c49ee54b7415ac63f63b",
+  "evidence_run": "https://github.com/nritsche/PremiereTimelinePrep/actions/runs/42621680460",
+  "additional_evidence": "Gyan release README fetched independently from the 9.0.2 essentials ZIP; not present in this baseline binary artifact."
+}

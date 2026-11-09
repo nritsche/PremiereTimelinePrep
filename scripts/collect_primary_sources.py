@@ -116,6 +116,8 @@ if __name__ == '__main__':
     parser.add_argument('--out', type=Path, default=Path('build-tools/primary-sources'))
     arguments = parser.parse_args()
     collect(arguments.application, arguments.out)
+    from collect_native_sources import collect_native_sources
+    collect_native_sources(arguments.application, arguments.out / 'native')
     # Added notices change the inventory, never the program or test results.
     from distribution_audit import audit_distribution, sha256
     manifest_path = arguments.application / 'build-manifest.json'

@@ -104,9 +104,9 @@ Public downloads require a license/source distribution review. The manual
 artifact, corresponding-source checksum, and license materials, then creates a
 **draft prerelease**, not a published release. See [third-party notices](THIRD_PARTY_NOTICES.md)
 and the [release checklist](docs/RELEASE_CHECKLIST.md). The current
-[third-party review evidence](docs/THIRD_PARTY_REVIEW.md) records what remains
+[third-party review evidence](docs/THIRD_PARTY_REVIEW.md) and [native dependency matches](docs/NATIVE_DEPENDENCIES.md) records what remains
 unresolved. For private review builds, the manual workflow can collect primary
-upstream sources and source-shipped notices; these are not automatic distribution
+and matched native upstream sources and source-shipped notices; these are not automatic distribution
 approval. [Library replacement instructions](docs/LIBRARY_REPLACEMENT.md) describe
 the portable layout and rebuild path.
 

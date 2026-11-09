@@ -100,6 +100,11 @@ def main() -> int:
     shutil.copytree(ROOT / 'docs', dist / 'docs', dirs_exist_ok=True)
     if (ROOT / 'licenses').is_dir():
         shutil.copytree(ROOT / 'licenses', dist / 'licenses', dirs_exist_ok=True)
+    from binary_origins import record_binary_origins
+    record_binary_origins(ROOT / 'build/PremiereTimelinePrep/Analysis-00.toc', dist, tools_root, ROOT)
+    audit_distribution(dist, manifest['commit'])
+    from native_dependency_review import review_native_dependencies
+    review_native_dependencies(dist)
     audit_distribution(dist, manifest['commit'])
     manifest['distribution_inventory_sha256'] = sha256(dist / 'distribution-inventory.json')
     manifest['package_layout'] = 'portable-folder-with-replaceable-shared-libraries'

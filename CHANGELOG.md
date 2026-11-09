@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Match actual native DLL versions to upstream references, detect historical notice mismatches, collect native source candidates, and record binary input origins without host paths.
+
 - Package Windows builds as a portable folder with replaceable libraries, original upstream notice collections, complete file/version inventory and primary-source review tooling.
 
 - License original project code under the standard MIT license.

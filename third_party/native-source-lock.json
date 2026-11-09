@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "sources": [
+    {
+      "id": "openssl-3.5.9",
+      "repository": "openssl/openssl",
+      "ref": "openssl-3.5.9",
+      "commit": "45e844fa2a14ec92d146bd8f5778ac130b6625fb",
+      "source_url": "https://api.github.com/repos/openssl/openssl/tarball/45e844fa2a14ec92d146bd8f5778ac130b6625fb",
+      "match_scope": "Upstream version reference; provider patches and build correspondence still require review."
+    },
+    {
+      "id": "openssl-3.0.16",
+      "repository": "openssl/openssl",
+      "ref": "openssl-3.0.16",
+      "commit": "fa1e5dfb142bb1c26c3c38a10aafa7a095df52e5",
+      "source_url": "https://api.github.com/repos/openssl/openssl/tarball/fa1e5dfb142bb1c26c3c38a10aafa7a095df52e5",
+      "match_scope": "Upstream version reference; provider patches and build correspondence still require review."
+    },
+    {
+      "id": "xz-5.4.6",
+      "repository": "tukaani-project/xz",
+      "ref": "v5.4.6",
+      "commit": "6e8732c5a317a349986a4078718f1d95b67072c5",
+      "source_url": "https://api.github.com/repos/tukaani-project/xz/tarball/6e8732c5a317a349986a4078718f1d95b67072c5",
+      "match_scope": "Upstream version reference; provider patches and build correspondence still require review."
+    },
+    {
+      "id": "xz-5.2.4",
+      "repository": "tukaani-project/xz",
+      "ref": "v5.2.4",
+      "commit": "b5be61cc06088bb07f488f9baf7d447ff47b37c1",
+      "source_url": "https://api.github.com/repos/tukaani-project/xz/tarball/b5be61cc06088bb07f488f9baf7d447ff47b37c1",
+      "match_scope": "Upstream version reference; provider patches and build correspondence still require review."
+    },
+    {
+      "id": "perl-5.32.1",
+      "repository": "Perl/perl5",
+      "ref": "v5.32.1",
+      "commit": "df9d952d734ef94233ed84af97ca318d7972eed0",
+      "source_url": "https://api.github.com/repos/Perl/perl5/tarball/df9d952d734ef94233ed84af97ca318d7972eed0",
+      "match_scope": "Upstream version reference; provider patches and build correspondence still require review."
+    },
+    {
+      "id": "gcc-8.3.0",
+      "repository": "gcc-mirror/gcc",
+      "ref": "releases/gcc-8.3.0",
+      "commit": "4c44b708f11eec6fc02456e8577708d01ca92327",
+      "source_url": "https://api.github.com/repos/gcc-mirror/gcc/tarball/4c44b708f11eec6fc02456e8577708d01ca92327",
+      "match_scope": "Upstream version reference; provider patches and build correspondence still require review."
+    },
+    {
+      "id": "mingw-w64-6.0.0",
+      "commit": "cb090affef8ebcd8c13ffc271b4500dea3b52f33",
+      "repository": "mingw-w64/mingw-w64",
+      "source_url": "https://api.github.com/repos/mingw-w64/mingw-w64/tarball/cb090affef8ebcd8c13ffc271b4500dea3b52f33",
+      "match_scope": "Version identified from preserved Strawberry Perl compiler/runtime notice; provider patch/build correspondence remains open."
+    },
+    {
+      "id": "mesa-11.2.2",
+      "source_url": "https://archive.mesa3d.org/older-versions/11.x/11.2.2/mesa-11.2.2.tar.xz",
+      "archive_format": "tar.xz",
+      "match_scope": "Version string plus exact DLL fingerprint; Qt build patches remain to be verified."
+    },
+    {
+      "id": "llvm-3.6.2",
+      "source_url": "https://releases.llvm.org/3.6.2/llvm-3.6.2.src.tar.xz",
+      "archive_format": "tar.xz",
+      "match_scope": "Version string in the exact software-renderer DLL; Qt build patches remain to be verified."
+    }
+  ],
+  "fingerprints": [
+    {
+      "path": "_internal/PySide6/opengl32sw.dll",
+      "sha256": "18aedc7a4b610f53bcc7b7a5c5ed9293c7e86f030e3273ad54ed3bb1ebd36702",
+      "components": [
+        {
+          "name": "Mesa",
+          "version": "11.2.2"
+        },
+        {
+          "name": "LLVM",
+          "version": "3.6.2"
+        }
+      ],
+      "evidence": "Version strings extracted from the DLL; archive byte hash matches the portable build.",
+      "build_instructions": "https://wiki.qt.io/MesaLlvmpipe",
+      "status": "version-identified-build-correspondence-open",
+      "source_ids": [
+        "mesa-11.2.2",
+        "llvm-3.6.2"
+      ]
+    }
+  ]
+}

@@ -50,6 +50,20 @@ that upstream README alongside the tool rather than discarding it.
 These references are starting evidence, not proof that every binary was built
 from unmodified sources with a known complete configuration.
 
+## Native version matching progress
+
+See [NATIVE_DEPENDENCIES.md](NATIVE_DEPENDENCIES.md) and the observed baseline in
+`third_party/native-review-baseline.json`. Both observed OpenSSL versions, both
+XZ versions, Perl, GCC and MinGW now have exact version references; the renderer
+was identified as Mesa 11.2.2/LLVM 3.6.2 by its byte-matched DLL. The old Perl
+OpenSSL notice does not match the current OpenSSL DLLs and is not used as their
+license attribution. One different runtime-root GCC DLL needs input-origin tracing.
+
+The private source collector now gathers nine matched native source candidates (two OpenSSL, two XZ, Perl, GCC, MinGW-w64, Mesa and LLVM)
+and their notices separately. Version matching is not an automatic approval of
+provider build correspondence or legal terms. Microsoft redistributables require
+their redistribution terms, not an invented corresponding-source requirement.
+
 ## What must still be resolved
 
 1. Match all inventoried DLLs and Qt plugins to their actual upstream terms and
