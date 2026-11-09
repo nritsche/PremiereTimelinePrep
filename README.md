@@ -115,3 +115,9 @@ and the [release checklist](docs/RELEASE_CHECKLIST.md).
 
 Report bugs using the repository's issue template. Do not attach unreviewed private
 reports or footage. Development guidance is in [CONTRIBUTING.md](CONTRIBUTING.md).
+
+## License
+
+Original project code is licensed under the standard [MIT License](LICENSE).
+Bundled third-party components retain their own terms; see
+[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

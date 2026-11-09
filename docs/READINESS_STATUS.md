@@ -15,16 +15,16 @@ Implemented by the release-readiness changes:
 - A draft-release process that verifies trusted artifacts and source-bundle hashes.
 - Sanitized documentation screenshot, walkthrough, privacy/security guidance, issue template.
 - Regression tests for the audit findings and runtime staging.
+- Standard MIT project license, full license text, and SPDX package metadata.
 
 Still required from the maintainer / target environment:
 
-1. Choose the project license; add its full text and matching pyproject metadata.
-2. Run the updated Windows workflow and test on a clean Windows machine.
-3. Complete exact bundled-dependency copyright/license/source/relinking review.
+1. Run the updated Windows workflow and test on a clean Windows machine.
+2. Complete exact bundled-dependency copyright/license/source/relinking review.
    Standard license texts and provenance tooling are included, but do not by
    themselves complete this review. Supply corresponding third-party source/build materials.
-4. Test the XML inside Premiere and record real results in PREMIERE_VALIDATION.md.
-5. Enable repository secret scanning/private vulnerability reporting where available,
+3. Test the XML inside Premiere and record real results in PREMIERE_VALIDATION.md.
+4. Enable repository secret scanning/private vulnerability reporting where available,
    review Git history and publish only after the appropriate release checklist passes.
 
 No repository visibility change, tag, or public release is performed by these changes.

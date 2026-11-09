@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- License original project code under the standard MIT license.
+
 - Correct ranking for grouped embedded recording dates; retain malformed date candidates.
 - Add camera timezone selection, safe scan cancellation, and save/discard prompts.
 - Validate saved sessions before display and permit manual dates on undated clips.
