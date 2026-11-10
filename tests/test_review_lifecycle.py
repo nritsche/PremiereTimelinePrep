@@ -59,7 +59,6 @@ def test_cancelled_save_prevents_discard(window, monkeypatch):
 
 
 def test_project_button_saves_reloadable_review_and_scan_is_with_folders(window, monkeypatch, tmp_path):
-    from PySide6.QtCore import Qt
     from PySide6.QtWidgets import QFileDialog
     from app.core.session_report import read_session_report
     video = VideoFile(str(tmp_path / 'missing.mov'), 'missing.mov', 1)
@@ -73,3 +72,13 @@ def test_project_button_saves_reloadable_review_and_scan_is_with_folders(window,
     assert excluded == {video.path}
     assert not window.dirty
     assert window.folder_panel.isAncestorOf(window.scan_button)
+
+
+def test_folder_actions_keep_their_labels_visible(window):
+    window.show()
+    QApplication.instance().processEvents()
+    for button in (window.add_folder_button, window.remove_folder_button, window.scan_button):
+        assert button.height() >= button.fontMetrics().height() + 8
+    assert window.add_folder_button.geometry().bottom() < window.remove_folder_button.geometry().top()
+    assert window.remove_folder_button.geometry().bottom() < window.scan_button.geometry().top()
+    assert window.folder_panel.geometry().bottom() < window.folder_toggle.geometry().top()

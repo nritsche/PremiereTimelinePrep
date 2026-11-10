@@ -10,7 +10,7 @@ from PySide6.QtWidgets import (QAbstractItemView, QCheckBox, QDateTimeEdit,
                                QListWidget, QListWidgetItem, QMainWindow, QInputDialog,
                                QMessageBox, QPushButton, QProgressBar, QSplitter,
                                QTableWidget, QTableWidgetItem, QPlainTextEdit,
-                               QVBoxLayout, QWidget, QTabWidget)
+                               QVBoxLayout, QWidget, QTabWidget, QScrollArea, QLayout)
 
 from app.core.xml_exporter import timeline_rate_notices, write_timeline_xml
 from app.core.scanner import DEFAULT_EXTENSIONS
@@ -46,6 +46,7 @@ class MainWindow(QMainWindow):
         root = QVBoxLayout(central)
         root.setContentsMargins(28, 24, 28, 20)
         root.setSpacing(14)
+        root.setSizeConstraint(QLayout.SetMinimumSize)
 
         title = QLabel("Premiere Timeline Prep")
         title.setObjectName("title")
@@ -65,8 +66,8 @@ class MainWindow(QMainWindow):
         folder_row = QHBoxLayout()
         self.folder_list = QListWidget()
         self.folder_list.setSelectionMode(QAbstractItemView.ExtendedSelection)
-        self.folder_list.setMinimumHeight(76)
-        self.folder_list.setMaximumHeight(118)
+        self.folder_list.setMinimumHeight(128)
+        self.folder_list.setMaximumHeight(150)
         folder_row.addWidget(self.folder_list, 1)
         folder_buttons = QVBoxLayout()
         self.add_folder_button = QPushButton("Add folder…")
@@ -76,6 +77,8 @@ class MainWindow(QMainWindow):
         self.scan_button = QPushButton("Scan folders")
         self.scan_button.setObjectName("primaryButton")
         self.scan_button.setMinimumWidth(140)
+        for button in (self.add_folder_button, self.remove_folder_button, self.scan_button):
+            button.setMinimumHeight(36)
         folder_buttons.addWidget(self.scan_button)
         folder_buttons.addStretch(1)
         folder_row.addLayout(folder_buttons)
@@ -91,7 +94,7 @@ class MainWindow(QMainWindow):
         self.extension_list.setFlow(QListWidget.LeftToRight)
         self.extension_list.setWrapping(True)
         self.extension_list.setMaximumHeight(68)
-        self.extension_list.setMinimumWidth(500)
+        self.extension_list.setMinimumWidth(300)
         self.extension_list.setSelectionMode(QAbstractItemView.NoSelection)
         for extension in sorted(DEFAULT_EXTENSIONS):
             item = QListWidgetItem(extension)
@@ -189,6 +192,7 @@ class MainWindow(QMainWindow):
         self.review_tabs.currentChanged.connect(show_metadata_filters)
         show_metadata_filters(0)
         root.addWidget(self.review_tabs, 1)
+        self.review_tabs.hide()
 
         export_row = QHBoxLayout()
         export_hint = QLabel("3  Check the order, then save for Premiere")
@@ -221,7 +225,11 @@ class MainWindow(QMainWindow):
         footer.addWidget(self.export_report_button)
         root.addLayout(footer)
 
-        self.setCentralWidget(central)
+        self.content_scroll = QScrollArea()
+        self.content_scroll.setWidgetResizable(True)
+        self.content_scroll.setFrameShape(QScrollArea.NoFrame)
+        self.content_scroll.setWidget(central)
+        self.setCentralWidget(self.content_scroll)
         self.setStyleSheet("""
             QMainWindow, QWidget { background: #f5f7fa; color: #1e293b; font-size: 13px; }
             QLabel#title { font-size: 27px; font-weight: 700; color: #14243a; }
@@ -241,6 +249,9 @@ class MainWindow(QMainWindow):
             QProgressBar::chunk { background: #2e8bca; border-radius: 4px; }
             QLabel#status { color: #64748b; }
         """)
+        folder_panel.ensurePolished()
+        folder_layout.invalidate()
+        folder_panel.setMinimumHeight(folder_layout.minimumSize().height())
 
         self.add_folder_button.clicked.connect(self._add_folder)
         self.remove_folder_button.clicked.connect(self._remove_folders)
@@ -432,10 +443,14 @@ class MainWindow(QMainWindow):
         else:
             self.setup_notice.hide()
         self._populate_table(videos)
+        self.review_tabs.setVisible(bool(videos))
         if videos:
             self.folder_panel.hide()
             self.folder_toggle.setText('Show folder options')
             self.review_tabs.setCurrentIndex(0)
+        else:
+            self.folder_panel.show()
+            self.folder_toggle.setText('Hide folder options')
         self.progress.hide()
         self.open_session_button.setEnabled(True)
         self.scan_button.setEnabled(True)
