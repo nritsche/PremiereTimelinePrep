@@ -15,4 +15,4 @@ packaging==26.3
 pefile==2024.8.26; sys_platform == 'win32'
 pywin32-ctypes==0.2.3; sys_platform == 'win32'
 setuptools==84.2.1
-wheel==0.45.1
+wheel==0.46.2
