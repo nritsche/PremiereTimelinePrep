@@ -1,28 +1,27 @@
 """Bounded, scrollable review of the exact XML assembly order."""
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import (QAbstractItemView, QDialog, QDialogButtonBox,
+from PySide6.QtWidgets import (QAbstractItemView, QDialogButtonBox,
                                QHeaderView, QLabel, QPlainTextEdit, QTableWidget,
-                               QTableWidgetItem, QVBoxLayout, QTabWidget)
+                               QTableWidgetItem, QTabWidget)
 
 from app.core.chronological_sorter import chronological_sort
 from app.gui.timeline_preview import TimelinePreview
+from app.gui.bounded_dialog import BoundedDialog
 
 
-class ExportReviewDialog(QDialog):
+class ExportReviewDialog(BoundedDialog):
     def __init__(self, videos, excluded_paths=(), notices=(), *, exporting=False, parent=None):
         super().__init__(parent)
-        self.setWindowTitle("Review XML export" if exporting else "Review export order")
-        screen = self.screen().availableGeometry()
-        self.setMaximumSize(max(1, screen.width() - 40), max(1, screen.height() - 60))
-        self.resize(min(1120, self.maximumWidth()), min(780, self.maximumHeight()))
-        layout = QVBoxLayout(self)
+        self.setWindowTitle("Save for Premiere" if exporting else "Review Premiere timeline")
+        layout = self.body_layout
         excluded = set(excluded_paths)
         clips = chronological_sort([video for video in videos if video.path not in excluded])
         explanation = QLabel(
-            "{} included clips, in the exact order used by XML export. Clips play back-to-back; "
+            "{} included clips, in the order saved for Premiere. Clips play back-to-back; "
             "recording gaps are removed. Scrub to inspect still frames; check sound/playback in Premiere. "
             "Close this window to change dates, sources or inclusion.".format(len(clips)))
         explanation.setWordWrap(True)
+        explanation.setTextFormat(Qt.PlainText)
         layout.addWidget(explanation)
         self.table = QTableWidget(len(clips), 5)
         self.table.setHorizontalHeaderLabels(["Order", "Clip", "Recording time (UTC)", "Camera / source", "Review"])
@@ -52,6 +51,7 @@ class ExportReviewDialog(QDialog):
                 item.setToolTip(video.path if column == 1 else value)
                 self.table.setItem(row, column, item)
         tabs = QTabWidget()
+        tabs.setMinimumSize(0, 300)
         self.preview = TimelinePreview(self)
         self.preview.include.hide()
         self.preview.edit_actions.hide()
@@ -69,6 +69,7 @@ class ExportReviewDialog(QDialog):
                 "This does not change clip order or convert your video files. After importing, check "
                 "playback and sound sync, especially near the end of these clips.".format(len(notices)))
             summary.setWordWrap(True)
+            summary.setTextFormat(Qt.PlainText)
             layout.addWidget(summary)
             self.timing_details = QPlainTextEdit()
             self.timing_details.setReadOnly(True)
@@ -78,9 +79,9 @@ class ExportReviewDialog(QDialog):
             layout.addWidget(self.timing_details)
         self.buttons = QDialogButtonBox(QDialogButtonBox.Cancel if exporting else QDialogButtonBox.Close)
         if exporting:
-            export = self.buttons.addButton("Export XML…", QDialogButtonBox.AcceptRole)
+            export = self.buttons.addButton("Save for Premiere…", QDialogButtonBox.AcceptRole)
             export.setDefault(False)
             self.buttons.button(QDialogButtonBox.Cancel).setDefault(True)
         self.buttons.accepted.connect(self.accept)
         self.buttons.rejected.connect(self.reject)
-        layout.addWidget(self.buttons)
+        self.outer_layout.addWidget(self.buttons)

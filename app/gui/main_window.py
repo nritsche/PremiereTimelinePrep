@@ -21,6 +21,7 @@ from app.gui.export_review_dialog import ExportReviewDialog
 from app.gui.scan_worker import ScanWorker
 from app.gui.timeline_preview import TimelinePreview
 from app.core.source_grouping import assign_automatic_sources
+from app.gui.bounded_dialog import show_warning
 
 
 class MainWindow(QMainWindow):
@@ -72,6 +73,10 @@ class MainWindow(QMainWindow):
         self.remove_folder_button = QPushButton("Remove selected")
         folder_buttons.addWidget(self.add_folder_button)
         folder_buttons.addWidget(self.remove_folder_button)
+        self.scan_button = QPushButton("Scan folders")
+        self.scan_button.setObjectName("primaryButton")
+        self.scan_button.setMinimumWidth(140)
+        folder_buttons.addWidget(self.scan_button)
         folder_buttons.addStretch(1)
         folder_row.addLayout(folder_buttons)
         folder_layout.addLayout(folder_row)
@@ -186,7 +191,7 @@ class MainWindow(QMainWindow):
         root.addWidget(self.review_tabs, 1)
 
         export_row = QHBoxLayout()
-        export_hint = QLabel("3  Check the order, then export your timeline")
+        export_hint = QLabel("3  Check the order, then save for Premiere")
         export_hint.setObjectName("sectionTitle")
         export_row.addWidget(export_hint, 1)
         root.addLayout(export_row)
@@ -202,22 +207,18 @@ class MainWindow(QMainWindow):
         self.cancel_scan_button = QPushButton("Cancel scan")
         self.cancel_scan_button.hide()
         footer.addWidget(self.cancel_scan_button)
-        self.review_order_button = QPushButton("Review export order…")
+        self.review_order_button = QPushButton("Review timeline…")
         self.review_order_button.setEnabled(False)
         export_row.addWidget(self.review_order_button)
-        self.export_xml_button = QPushButton("Export XML…")
+        self.export_xml_button = QPushButton("Save for Premiere…")
         self.export_xml_button.setEnabled(False)
-        self.export_xml_button.setToolTip("Experimental chronological timeline for Premiere; import validation required")
+        self.export_xml_button.setToolTip("Save a timeline XML to import into Premiere Pro")
         export_row.addWidget(self.export_xml_button)
-        self.open_session_button = QPushButton("Open session…")
+        self.open_session_button = QPushButton("Load past project…")
         footer.addWidget(self.open_session_button)
-        self.export_report_button = QPushButton("Export report…")
+        self.export_report_button = QPushButton("Save project for later…")
         self.export_report_button.setEnabled(False)
         footer.addWidget(self.export_report_button)
-        self.scan_button = QPushButton("Scan folders")
-        self.scan_button.setObjectName("primaryButton")
-        self.scan_button.setMinimumWidth(140)
-        footer.addWidget(self.scan_button)
         root.addLayout(footer)
 
         self.setCentralWidget(central)
@@ -248,7 +249,11 @@ class MainWindow(QMainWindow):
         self.review_order_button.clicked.connect(self._review_export_order)
         self.export_xml_button.clicked.connect(self._export_xml)
         self.open_session_button.clicked.connect(self._open_session)
-        self.export_report_button.clicked.connect(self._export_report)
+        self.export_report_button.clicked.connect(self._save_session)
+        file_menu = self.menuBar().addMenu("File")
+        self.report_action = file_menu.addAction("Export report (JSON / CSV)…")
+        self.report_action.setEnabled(False)
+        self.report_action.triggered.connect(self._export_report)
         self.table.itemChanged.connect(self._include_changed)
         self.search_field.textChanged.connect(self._filter_rows)
         self.camera_filter.currentTextChanged.connect(self._filter_rows)
@@ -304,13 +309,14 @@ class MainWindow(QMainWindow):
         try:
             ZoneInfo(self.timezone_combo.currentText().strip())
         except (ZoneInfoNotFoundError, ValueError):
-            QMessageBox.warning(self, "Choose a timezone", "Choose a valid timezone, such as UTC or Europe/Madrid.")
+            show_warning(self, "Choose a timezone", "Choose a valid timezone, such as UTC or Europe/Madrid.")
             return
         if not self._confirm_discard():
             return
         self.open_session_button.setEnabled(False)
         self.scan_button.setEnabled(False)
         self.export_report_button.setEnabled(False)
+        self.report_action.setEnabled(False)
         self.export_xml_button.setEnabled(False)
         self.review_order_button.setEnabled(False)
         self.add_folder_button.setEnabled(False)
@@ -345,7 +351,7 @@ class MainWindow(QMainWindow):
     def _scan_failed(self, message):
         self.status_label.setText("Scan failed; previous review retained.")
         if not self._close_pending:
-            QMessageBox.warning(self, "Scan failed", message)
+            show_warning(self, "Scan failed", message)
 
     def _finish_scan(self):
         self.progress.hide()
@@ -358,6 +364,7 @@ class MainWindow(QMainWindow):
             button.setEnabled(True)
         for button in (self.export_report_button, self.export_xml_button, self.review_order_button):
             button.setEnabled(bool(self.videos))
+        self.report_action.setEnabled(bool(self.videos))
         self._show_row_details(0, 0, 0, 0)
         if self._close_pending:
             self.close()
@@ -367,27 +374,28 @@ class MainWindow(QMainWindow):
         self.setWindowModified(dirty)
 
     def _save_session(self):
-        path, _ = QFileDialog.getSaveFileName(self, "Save reviewed session", "session-report.json", "JSON session (*.json)")
+        path, _ = QFileDialog.getSaveFileName(self, "Save project for later", "session-report.json", "Saved project (*.json)")
         if not path:
             return False
         if not os.path.splitext(path)[1]:
             path += ".json"
         if os.path.splitext(path)[1].lower() != ".json":
-            QMessageBox.warning(self, "Choose JSON", "Save a .json session to preserve the full review.")
+            show_warning(self, "Choose JSON", "Save a .json project to preserve the full review.")
             return False
         try:
             write_session_report(path, self.videos, excluded_paths=self.excluded_paths,
                                  folders=[self.folder_list.item(i).text() for i in range(self.folder_list.count())])
         except (OSError, ValueError, TypeError) as exc:
-            QMessageBox.warning(self, "Session could not be saved", str(exc))
+            show_warning(self, "Project could not be saved", str(exc))
             return False
         self._set_dirty(False)
+        self.status_label.setText("Saved project for later to {}".format(path))
         return True
 
     def _confirm_discard(self):
         if not self.dirty:
             return True
-        answer = QMessageBox.question(self, "Save reviewed session?",
+        answer = QMessageBox.question(self, "Save project for later?",
             "Save your clip dates, camera groups, and inclusion choices before continuing?",
             QMessageBox.Save | QMessageBox.Discard | QMessageBox.Cancel, QMessageBox.Cancel)
         if answer == QMessageBox.Save:
@@ -405,6 +413,7 @@ class MainWindow(QMainWindow):
         self._set_dirty(bool(videos))
         self.excluded_paths.intersection_update(video.path for video in videos)
         self.export_report_button.setEnabled(bool(videos))
+        self.report_action.setEnabled(bool(videos))
         self.export_xml_button.setEnabled(bool(videos))
         self.review_order_button.setEnabled(bool(videos))
         self.tool_notices = self._collect_tool_notices(videos)
@@ -496,13 +505,13 @@ class MainWindow(QMainWindow):
         self.timeline_preview.set_clips(self.videos, self.excluded_paths)
 
     def _open_session(self):
-        path, _ = QFileDialog.getOpenFileName(self, "Open session", "", "JSON session report (*.json)")
+        path, _ = QFileDialog.getOpenFileName(self, "Load past project", "", "Saved project (*.json)")
         if not path:
             return
         try:
             videos, excluded, folders = read_session_report(path)
         except (OSError, ValueError) as exc:
-            QMessageBox.warning(self, "Session could not be opened", str(exc))
+            show_warning(self, "Project could not be loaded", str(exc))
             return
         if not self._confirm_discard():
             return
@@ -515,7 +524,7 @@ class MainWindow(QMainWindow):
         if len(zones) == 1:
             self.timezone_combo.setCurrentText(zones.pop())
         missing = sum(not os.path.isfile(video.path) for video in videos)
-        self.status_label.setText("Opened {} clips from session{}".format(
+        self.status_label.setText("Loaded {} clips from project{}".format(
             len(videos), " · {} media files unavailable at saved paths".format(missing) if missing else ""))
 
     def _review_export_order(self):
@@ -525,13 +534,13 @@ class MainWindow(QMainWindow):
         try:
             notices = timeline_rate_notices(self.videos, self.excluded_paths)
         except (ValueError, TypeError) as exc:
-            QMessageBox.warning(self, "XML could not be exported", str(exc))
+            show_warning(self, "Timeline could not be saved for Premiere", str(exc))
             return
         dialog = ExportReviewDialog(self.videos, self.excluded_paths, notices,
                                     exporting=True, parent=self)
         if dialog.exec() != QDialog.Accepted:
             return
-        path, _ = QFileDialog.getSaveFileName(self, "Export experimental Premiere timeline", "timeline.xml", "Final Cut Pro 7 XML (*.xml)")
+        path, _ = QFileDialog.getSaveFileName(self, "Save for Premiere", "timeline.xml", "Premiere timeline (*.xml)")
         if not path:
             return
         if not os.path.splitext(path)[1]:
@@ -539,9 +548,9 @@ class MainWindow(QMainWindow):
         try:
             write_timeline_xml(path, self.videos, excluded_paths=self.excluded_paths)
         except (OSError, ValueError, TypeError) as exc:
-            QMessageBox.warning(self, "XML could not be exported", str(exc))
+            show_warning(self, "Timeline could not be saved for Premiere", str(exc))
             return
-        self.status_label.setText("Saved experimental XML. Import in Premiere to verify picture, sound, timing, and media links.")
+        self.status_label.setText("Saved timeline for Premiere. Import the saved XML in Premiere to check picture, sound, timing, and media links.")
 
     def _export_report(self):
         path, selected_filter = QFileDialog.getSaveFileName(
@@ -556,7 +565,7 @@ class MainWindow(QMainWindow):
                 path, self.videos, excluded_paths=self.excluded_paths,
                 folders=[self.folder_list.item(i).text() for i in range(self.folder_list.count())])
         except (OSError, ValueError, TypeError) as exc:
-            QMessageBox.warning(self, "Report could not be saved", str(exc))
+            show_warning(self, "Report could not be saved", str(exc))
             return
         if os.path.splitext(path)[1].lower() == ".json":
             self._set_dirty(False)
@@ -697,7 +706,7 @@ class MainWindow(QMainWindow):
         group = [video for video in self.videos if video.camera == reference.camera]
         if dialog.reference_mode.isChecked():
             if not reference.selected_timestamp:
-                QMessageBox.warning(self, "No reference timestamp", "The selected clip has no timestamp to correct.")
+                show_warning(self, "No reference timestamp", "The selected clip has no timestamp to correct.")
                 return
             offset = set_reference_time(group, reference, dialog.actual_reference_time())
         else:

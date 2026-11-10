@@ -56,3 +56,20 @@ def test_cancelled_save_prevents_discard(window, monkeypatch):
     monkeypatch.setattr(QMessageBox, 'question', lambda *args: QMessageBox.Save)
     monkeypatch.setattr(window, '_save_session', lambda: False)
     assert not window._confirm_discard()
+
+
+def test_project_button_saves_reloadable_review_and_scan_is_with_folders(window, monkeypatch, tmp_path):
+    from PySide6.QtCore import Qt
+    from PySide6.QtWidgets import QFileDialog
+    from app.core.session_report import read_session_report
+    video = VideoFile(str(tmp_path / 'missing.mov'), 'missing.mov', 1)
+    window._scan_completed([video])
+    window.excluded_paths.add(video.path)
+    target = tmp_path / 'project.json'
+    monkeypatch.setattr(QFileDialog, 'getSaveFileName', lambda *args: (str(target), ''))
+    window.export_report_button.click()
+    loaded, excluded, _ = read_session_report(target)
+    assert loaded[0].camera == video.camera
+    assert excluded == {video.path}
+    assert not window.dirty
+    assert window.folder_panel.isAncestorOf(window.scan_button)
