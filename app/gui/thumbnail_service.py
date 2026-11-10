@@ -31,13 +31,13 @@ class ThumbnailService(QObject):
         self.buffer = bytearray()
 
     def request(self, video, seconds, token, *, priority=False):
-        if not self.executable:
-            self.ready.emit(token, QImage(), 'Install FFmpeg to see clip images. XML export remains available.')
-            return
         try:
             stat = os.stat(video.path)
         except OSError:
             self.ready.emit(token, QImage(), 'Media file unavailable at the saved path')
+            return
+        if not self.executable:
+            self.ready.emit(token, QImage(), 'Install FFmpeg to see clip images. XML export remains available.')
             return
         # Never cache media frames on disk or include them in session reports.
         key = (video.path, stat.st_size, stat.st_mtime_ns, round(max(0, seconds), 3))

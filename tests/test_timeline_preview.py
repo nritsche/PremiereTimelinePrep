@@ -64,6 +64,7 @@ def test_scrubbing_crosses_clip_boundary_and_filter_does_not_change_sequence(pre
 
 
 def test_missing_media_is_explicit_and_exclusion_can_be_restored(preview, tmp_path):
+    preview.service.executable = None
     video = clip(tmp_path, 'missing.mov')
     preview.set_clips([video], [video.path])
     assert preview.cards.count() == 0
