@@ -6,7 +6,7 @@ This document records observations and remaining evidence, not legal clearance.
 ## What the inspected build contains
 
 The Windows artifact from commit `14b616b` contained Python 3.12.10,
-PySide6-Essentials/Shiboken 6.12.0, Gyan FFprobe 9.0.2, ExifTool 13.59,
+PySide6-Essentials/Shiboken 6.12.0, Gyan FFprobe/FFmpeg 9.0.2, ExifTool 13.59,
 and tzdata 2025.2. Inspecting its PyInstaller archive found 1,336 members:
 Qt Core/Gui/Widgets/Network/Svg and image/TLS/platform plugins; Python extensions;
 Microsoft runtime DLLs; OpenSSL; and Perl/GNU native runtimes.

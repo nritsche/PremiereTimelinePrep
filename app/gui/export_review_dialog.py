@@ -2,9 +2,10 @@
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (QAbstractItemView, QDialog, QDialogButtonBox,
                                QHeaderView, QLabel, QPlainTextEdit, QTableWidget,
-                               QTableWidgetItem, QVBoxLayout)
+                               QTableWidgetItem, QVBoxLayout, QTabWidget)
 
 from app.core.chronological_sorter import chronological_sort
+from app.gui.timeline_preview import TimelinePreview
 
 
 class ExportReviewDialog(QDialog):
@@ -13,16 +14,14 @@ class ExportReviewDialog(QDialog):
         self.setWindowTitle("Review XML export" if exporting else "Review export order")
         screen = self.screen().availableGeometry()
         self.setMaximumSize(max(1, screen.width() - 40), max(1, screen.height() - 60))
-        self.resize(min(900, self.maximumWidth()), min(650, self.maximumHeight()))
+        self.resize(min(1120, self.maximumWidth()), min(780, self.maximumHeight()))
         layout = QVBoxLayout(self)
         excluded = set(excluded_paths)
         clips = chronological_sort([video for video in videos if video.path not in excluded])
         explanation = QLabel(
             "{} included clips, in the exact order used by XML export. Clips play back-to-back; "
-            "gaps between recording times are removed. Search filters and table sorting do not change this order.\n\n"
-            "Check the recording dates below against the event you filmed. To fix a date or camera clock, "
-            "close this window and use Edit selected timestamp or Correct camera group. "
-            "Clips without a date go last; equal dates are ordered by filename and path.".format(len(clips)))
+            "recording gaps are removed. Scrub to inspect still frames; check sound/playback in Premiere. "
+            "Close this window to change dates, sources or inclusion.".format(len(clips)))
         explanation.setWordWrap(True)
         layout.addWidget(explanation)
         self.table = QTableWidget(len(clips), 5)
@@ -52,7 +51,17 @@ class ExportReviewDialog(QDialog):
                 item = QTableWidgetItem(value)
                 item.setToolTip(video.path if column == 1 else value)
                 self.table.setItem(row, column, item)
-        layout.addWidget(self.table, 1)
+        tabs = QTabWidget()
+        self.preview = TimelinePreview(self)
+        self.preview.include.hide()
+        self.preview.edit_actions.hide()
+        self.preview.summary.hide()
+        self.preview.hint.hide()
+        self.preview.set_clips(videos, excluded_paths)
+        tabs.addTab(self.preview, 'Visual timeline')
+        tabs.addTab(self.table, 'Recording dates & warnings')
+        layout.addWidget(tabs, 1)
+        self.finished.connect(lambda _: self.preview.stop())
         if notices:
             summary = QLabel(
                 "Timing notice: {} clip(s) have an uneven or unusual frame rate. XML needs a fixed rate, "

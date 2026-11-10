@@ -86,7 +86,7 @@ def _component(relative):
     name = relative.lower()
     if name.startswith('licenses/'):
         return 'notice-materials'
-    if 'tools/ffprobe/' in name:
+    if 'tools/ffprobe/' in name or 'tools/ffmpeg/' in name:
         return 'ffprobe-and-static-dependencies'
     if 'tools/exiftool/' in name or any(part in name for part in ('perl532', 'libgcc_', 'libstdc++', 'libwinpthread')):
         return 'exiftool-perl-and-native-dependencies'

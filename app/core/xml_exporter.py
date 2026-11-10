@@ -57,6 +57,22 @@ def timeline_rate_notices(videos, excluded_paths=()):
             for _, notice in [timeline_rate(video)] if notice]
 
 
+def assembly_frame_spans(clips, sequence_rate):
+    """Shared preview/export timing: accumulate elapsed time before rounding."""
+    elapsed = Fraction(0)
+    previous_end = 0
+    spans = []
+    for video in clips:
+        duration = video.duration_seconds
+        if not duration or not math.isfinite(duration) or duration <= 0:
+            raise ValueError('Valid clip durations are required for timeline timing')
+        elapsed += Fraction(str(duration))
+        end = max(previous_end + 1, round(elapsed * sequence_rate))
+        spans.append((previous_end, end))
+        previous_end = end
+    return spans
+
+
 def _text(parent, name, value):
     child = ET.SubElement(parent, name)
     child.text = str(value)
@@ -156,16 +172,9 @@ def write_timeline_xml(path, videos, *, excluded_paths=(), name="Chronological f
     audio_media = ET.SubElement(media, "audio")
     audio_tracks = []
     audio_clip_counts = []
-    elapsed = Fraction(0)
-    for index, (video, rate) in enumerate(zip(clips, rates), 1):
+    spans = assembly_frame_spans(clips, sequence_rate[2])
+    for index, (video, rate, (start, end)) in enumerate(zip(clips, rates, spans), 1):
         source_frames = max(1, round(Fraction(str(video.duration_seconds)) * rate[2]))
-        start = round(elapsed * sequence_rate[2])
-        elapsed += Fraction(str(video.duration_seconds))
-        end = max(start + 1, round(elapsed * sequence_rate[2]))
-        if index > 1:
-            start = previous_end
-            end = max(start + 1, end)
-        previous_end = end
         channels = int(video.metadata.get("ffprobe.audio_channels", 0)) if video.audio_codec else 0
         if channels < 0 or channels > 32:
             raise ValueError("Unsupported audio channel count")

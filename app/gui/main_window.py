@@ -10,7 +10,7 @@ from PySide6.QtWidgets import (QAbstractItemView, QCheckBox, QDateTimeEdit,
                                QListWidget, QListWidgetItem, QMainWindow, QInputDialog,
                                QMessageBox, QPushButton, QProgressBar, QSplitter,
                                QTableWidget, QTableWidgetItem, QPlainTextEdit,
-                               QVBoxLayout, QWidget)
+                               QVBoxLayout, QWidget, QTabWidget)
 
 from app.core.xml_exporter import timeline_rate_notices, write_timeline_xml
 from app.core.scanner import DEFAULT_EXTENSIONS
@@ -19,6 +19,8 @@ from app.core.timestamp_corrector import apply_offset, override_timestamp, set_r
 from app.gui.camera_correction_dialog import CameraCorrectionDialog
 from app.gui.export_review_dialog import ExportReviewDialog
 from app.gui.scan_worker import ScanWorker
+from app.gui.timeline_preview import TimelinePreview
+from app.core.source_grouping import assign_automatic_sources
 
 
 class MainWindow(QMainWindow):
@@ -52,6 +54,7 @@ class MainWindow(QMainWindow):
         root.addWidget(subtitle)
 
         folder_panel = QFrame()
+        self.folder_panel = folder_panel
         folder_panel.setObjectName("panel")
         folder_layout = QVBoxLayout(folder_panel)
         folder_layout.setContentsMargins(18, 16, 18, 16)
@@ -109,7 +112,11 @@ class MainWindow(QMainWindow):
         review_heading.setObjectName("sectionTitle")
         review_row.addWidget(review_heading)
         review_row.addStretch(1)
-        review_row.addWidget(QLabel("Camera:"))
+        self.folder_toggle = QPushButton('Hide folder options')
+        self.folder_toggle.clicked.connect(self._toggle_folder_options)
+        review_row.addWidget(self.folder_toggle)
+        self.metadata_filter_label = QLabel("Camera:")
+        review_row.addWidget(self.metadata_filter_label)
         self.camera_filter = QComboBox()
         self.camera_filter.addItem("All sources")
         self.camera_filter.setMinimumWidth(150)
@@ -167,7 +174,16 @@ class MainWindow(QMainWindow):
         review_splitter.addWidget(self.table)
         review_splitter.addWidget(details_panel)
         review_splitter.setSizes([420, 190])
-        root.addWidget(review_splitter, 1)
+        self.review_tabs = QTabWidget()
+        self.timeline_preview = TimelinePreview(self)
+        self.review_tabs.addTab(self.timeline_preview, 'Visual timeline')
+        self.review_tabs.addTab(review_splitter, 'Metadata & clock corrections')
+        def show_metadata_filters(index):
+            for widget in (self.metadata_filter_label, self.camera_filter, self.search_field):
+                widget.setVisible(index == 1)
+        self.review_tabs.currentChanged.connect(show_metadata_filters)
+        show_metadata_filters(0)
+        root.addWidget(self.review_tabs, 1)
 
         export_row = QHBoxLayout()
         export_hint = QLabel("3  Check the order, then export your timeline")
@@ -240,6 +256,26 @@ class MainWindow(QMainWindow):
         self.edit_timestamp_button.clicked.connect(self._edit_selected_timestamp)
         self.assign_source_button.clicked.connect(self._assign_camera_source)
         self.correct_camera_button.clicked.connect(self._correct_camera_group)
+        self.timeline_preview.clipSelected.connect(self._select_preview_clip)
+        self.timeline_preview.inclusionChanged.connect(self._preview_inclusion_changed)
+        self.timeline_preview.editRequested.connect(self._edit_selected_timestamp)
+        self.timeline_preview.correctionRequested.connect(self._correct_camera_group)
+
+    def _toggle_folder_options(self):
+        self.folder_panel.setVisible(not self.folder_panel.isVisible())
+        self.folder_toggle.setText('Hide folder options' if self.folder_panel.isVisible() else 'Show folder options')
+
+    def _select_preview_clip(self, path):
+        for row in range(self.table.rowCount()):
+            if self.table.item(row, 0).data(Qt.UserRole) == path:
+                self.table.setCurrentCell(row, 1)
+                break
+
+    def _preview_inclusion_changed(self, path, checked):
+        for row in range(self.table.rowCount()):
+            if self.table.item(row, 0).data(Qt.UserRole) == path:
+                self.table.item(row, 0).setCheckState(Qt.Checked if checked else Qt.Unchecked)
+                break
 
     def _add_folder(self):
         folder = QFileDialog.getExistingDirectory(self, "Choose a video folder")
@@ -280,6 +316,8 @@ class MainWindow(QMainWindow):
         self.add_folder_button.setEnabled(False)
         self.remove_folder_button.setEnabled(False)
         self.table.setEnabled(False)
+        self.timeline_preview.stop()
+        self.timeline_preview.setEnabled(False)
         self.edit_timestamp_button.setEnabled(False)
         self.assign_source_button.setEnabled(False)
         self.correct_camera_button.setEnabled(False)
@@ -314,6 +352,8 @@ class MainWindow(QMainWindow):
         self.cancel_scan_button.hide()
         self.timezone_combo.setEnabled(True)
         self.table.setEnabled(True)
+        self.timeline_preview.setEnabled(True)
+        self.timeline_preview.resume()
         for button in (self.scan_button, self.add_folder_button, self.remove_folder_button, self.open_session_button):
             button.setEnabled(True)
         for button in (self.export_report_button, self.export_xml_button, self.review_order_button):
@@ -360,6 +400,7 @@ class MainWindow(QMainWindow):
         self.status_label.setText("Analyzed {} of {} videos".format(current, total))
 
     def _scan_completed(self, videos):
+        assign_automatic_sources(videos)
         self.videos = videos
         self._set_dirty(bool(videos))
         self.excluded_paths.intersection_update(video.path for video in videos)
@@ -382,6 +423,10 @@ class MainWindow(QMainWindow):
         else:
             self.setup_notice.hide()
         self._populate_table(videos)
+        if videos:
+            self.folder_panel.hide()
+            self.folder_toggle.setText('Show folder options')
+            self.review_tabs.setCurrentIndex(0)
         self.progress.hide()
         self.open_session_button.setEnabled(True)
         self.scan_button.setEnabled(True)
@@ -437,6 +482,7 @@ class MainWindow(QMainWindow):
             self.edit_timestamp_button.setEnabled(False)
             self.assign_source_button.setEnabled(False)
             self.correct_camera_button.setEnabled(False)
+        self.timeline_preview.set_clips(self.videos, self.excluded_paths)
 
     def _include_changed(self, item):
         if item.column() != 0:
@@ -447,6 +493,7 @@ class MainWindow(QMainWindow):
             self.excluded_paths.discard(path)
         else:
             self.excluded_paths.add(path)
+        self.timeline_preview.set_clips(self.videos, self.excluded_paths)
 
     def _open_session(self):
         path, _ = QFileDialog.getOpenFileName(self, "Open session", "", "JSON session report (*.json)")
@@ -631,6 +678,7 @@ class MainWindow(QMainWindow):
         name = name.strip()
         for video in videos:
             video.camera = name
+            video.metadata['source_group_basis'] = 'Manual source group'
         self._set_dirty()
         self._refresh_camera_filter()
         self._populate_table(self.videos)
@@ -703,4 +751,5 @@ class MainWindow(QMainWindow):
             self.status_label.setText("Stopping scan before closing…")
             event.ignore()
             return
+        self.timeline_preview.stop()
         super().closeEvent(event)

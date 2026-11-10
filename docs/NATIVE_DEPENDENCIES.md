@@ -89,3 +89,13 @@ are retained in the Windows diagnostic artifact.
 experimental executable. Passing these synthetic checks is a prerequisite to
 testing a smaller build, not proof that every camera format remains supported.
 The shipped probe and supported features have not been changed.
+
+## Visual preview decoder
+
+The visual timeline adds a separate FFmpeg executable from the same pinned Gyan
+9.0.2 package, for on-demand still-frame decoding. This increases the portable
+bundle size. Both FFmpeg and FFprobe are inventoried under the FFmpeg component
+group; their executable hashes, version, build configuration and license output
+are retained. The old baseline sizes and hashes above do not describe this newer
+bundle. Its distribution review must cover the added executable too. No public
+distribution approval is implied by a successful thumbnail decode.

@@ -10,6 +10,7 @@ from datetime import datetime, timezone
 from typing import Any, Dict, Optional, Tuple
 
 from app.core.timestamp_resolver import resolve_timestamp
+from app.core.source_grouping import camera_identity
 from app.models.video_file import VideoFile
 
 
@@ -156,9 +157,9 @@ def extract_video(path: str, ffprobe: Optional[str] = None, exiftool: Optional[s
         clean = key.split(":")[-1]
         if clean in EXIF_FIELDS or clean in ("CreationTime", "DateTimeOriginal"):
             timestamp_values[key if ":" in key else clean] = value
-    make = exif_data.get("Make") or exif_data.get("QuickTime:Make")
-    model = exif_data.get("Model") or exif_data.get("QuickTime:Model")
-    video.camera = " ".join(str(x).strip() for x in (make, model) if x) or None
+    video.camera = camera_identity(exif_data, format_tags)
+    if video.camera:
+        video.metadata['source_group_basis'] = 'Embedded camera metadata'
     video.metadata["exiftool.raw"] = exif_data
     selected, candidates, warnings = resolve_timestamp(timestamp_values, video.filename,
                                                        video.filesystem_created, video.filesystem_modified,

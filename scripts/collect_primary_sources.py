@@ -69,6 +69,8 @@ def collect(application, destination):
         raise ValueError('Update the reviewed Qt/PySide source URLs for this build version')
     if '9.0.2-' not in manifest['tools']['ffprobe'] or manifest['tools']['exiftool'] != '13.59':
         raise ValueError('Update exact media-tool source revisions for this build version')
+    if manifest['tools'].get('ffmpeg') and '9.0.2-' not in manifest['tools']['ffmpeg']:
+        raise ValueError('Update exact FFmpeg decoder source revision for this build version')
     destination.mkdir(parents=True, exist_ok=True)
     rows = []
     for filename, url in SOURCES:

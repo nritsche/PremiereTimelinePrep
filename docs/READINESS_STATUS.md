@@ -20,6 +20,9 @@ Implemented by the release-readiness changes:
 - Optional private primary-source collection and review evidence tied to the exact inventory hash.
 - Native version/source matching, historical-notice mismatch detection, and build-input origin tracing.
 - A synthetic media comparison gate for packaged FFprobe across eight video formats with audio.
+- Visual timeline review with large thumbnails, still-frame scrubbing, automatic
+  camera/folder source labels and shared XML/preview frame boundaries. Windows
+  packaging includes FFmpeg and requires a real thumbnail decode in its self-test.
 
 Still required from the maintainer / target environment:
 

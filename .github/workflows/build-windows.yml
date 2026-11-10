@@ -64,13 +64,16 @@ jobs:
         run: |
           $chocoLib = Join-Path $env:ChocolateyInstall 'lib'
           $ffprobe = Get-ChildItem (Join-Path $chocoLib 'ffmpeg/tools') -Filter 'ffprobe.exe' -Recurse | Select-Object -First 1
+          $ffmpeg = Get-ChildItem (Join-Path $chocoLib 'ffmpeg/tools') -Filter 'ffmpeg.exe' -Recurse | Select-Object -First 1
           $exiftool = Get-ChildItem (Join-Path $chocoLib 'exiftool/tools') -Filter 'exiftool(-k).exe' -Recurse | Select-Object -First 1
           if (-not $exiftool) {
             $exiftool = Get-ChildItem (Join-Path $chocoLib 'exiftool/tools') -Filter 'exiftool.exe' -Recurse | Select-Object -First 1
           }
           if (-not $ffprobe) { throw 'FFprobe executable not found' }
+          if (-not $ffmpeg) { throw 'FFmpeg executable not found' }
           if (-not $exiftool) { throw 'ExifTool executable not found' }
           "ffprobe=$($ffprobe.FullName)" >> $env:GITHUB_OUTPUT
+          "ffmpeg=$($ffmpeg.FullName)" >> $env:GITHUB_OUTPUT
           "exiftool=$($exiftool.FullName)" >> $env:GITHUB_OUTPUT
       - name: Install pinned application and build dependencies
         run: |
@@ -84,6 +87,7 @@ jobs:
         run: >-
           python scripts/build_windows.py
           --ffprobe "${{ steps.media-tools.outputs.ffprobe }}"
+          --ffmpeg "${{ steps.media-tools.outputs.ffmpeg }}"
           --exiftool "${{ steps.media-tools.outputs.exiftool }}"
       - name: Test packaged executable and bundled tools
         run: python scripts/check_windows_bundle.py

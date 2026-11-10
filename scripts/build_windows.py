@@ -18,7 +18,7 @@ def copy_tool_folder(executable: Path, destination: Path, expected_name: str) ->
         raise ValueError("Missing required executable: {}".format(executable))
     destination.mkdir(parents=True, exist_ok=True)
     shutil.copy2(executable, destination / expected_name)
-    # Explicit runtime dependencies; do not bundle ffmpeg/ffplay or installers.
+    # Explicit runtime dependencies; companion executables are staged separately.
     for item in executable.parent.iterdir():
         if item.is_dir() and item.name.lower() == 'exiftool_files':
             shutil.copytree(item, destination / item.name, dirs_exist_ok=True)
@@ -42,6 +42,7 @@ def main() -> int:
     from distribution_audit import audit_distribution
     parser = argparse.ArgumentParser()
     parser.add_argument('--ffprobe', required=True, type=Path)
+    parser.add_argument('--ffmpeg', required=True, type=Path)
     parser.add_argument('--exiftool', required=True, type=Path)
     args = parser.parse_args()
     if sys.platform != 'win32':
@@ -49,7 +50,7 @@ def main() -> int:
     tools_root = ROOT / 'build-tools' / 'tools'
     if tools_root.exists():
         shutil.rmtree(tools_root)
-    for name, executable in [('ffprobe', args.ffprobe), ('exiftool', args.exiftool)]:
+    for name, executable in [('ffprobe', args.ffprobe), ('ffmpeg', args.ffmpeg), ('exiftool', args.exiftool)]:
         copy_tool_folder(executable.resolve(), tools_root / name, name + '.exe')
     command = [sys.executable, '-m', 'PyInstaller', '--noconfirm', '--clean', '--onedir',
                '--windowed', '--name', 'PremiereTimelinePrep', '--collect-data', 'tzdata',
@@ -62,7 +63,7 @@ def main() -> int:
         if path.is_file():
             staged[path.relative_to(tools_root).as_posix()] = sha256(path)
     versions = {}
-    for tool, flag in [('ffprobe', '-version'), ('exiftool', '-ver')]:
+    for tool, flag in [('ffprobe', '-version'), ('ffmpeg', '-version'), ('exiftool', '-ver')]:
         executable = tools_root / tool / (tool + '.exe')
         versions[tool] = subprocess.check_output([str(executable), flag], text=True,
             encoding='utf-8', errors='replace', timeout=30).splitlines()[0]
@@ -72,6 +73,10 @@ def main() -> int:
     for flag, filename in [('-buildconf', 'ffprobe-build-configuration.txt'), ('-L', 'ffprobe-license.txt')]:
         output = subprocess.check_output([str(ffprobe), flag], stderr=subprocess.STDOUT, text=True,
                                          encoding='utf-8', errors='replace', timeout=30)
+        (build_info / filename).write_text(output, encoding='utf-8')
+    for flag, filename in [('-buildconf', 'ffmpeg-build-configuration.txt'), ('-L', 'ffmpeg-license.txt')]:
+        output = subprocess.check_output([str(tools_root / 'ffmpeg/ffmpeg.exe'), flag],
+            stderr=subprocess.STDOUT, text=True, encoding='utf-8', errors='replace', timeout=30)
         (build_info / filename).write_text(output, encoding='utf-8')
     perl = tools_root / 'exiftool' / 'exiftool_files' / 'perl.exe'
     if perl.is_file():

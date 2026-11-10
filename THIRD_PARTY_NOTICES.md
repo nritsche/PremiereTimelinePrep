@@ -8,7 +8,7 @@ not a declaration that an unreviewed binary is ready for public distribution.
 | --- | --- | --- |
 | Python | [PSF license and notices](https://docs.python.org/3/license.html), [source](https://www.python.org/downloads/source/) | Interpreter and standard library bundled by PyInstaller |
 | Qt / PySide6 / Shiboken | [Qt for Python licensing](https://doc.qt.io/qtforpython-6/), [Qt licensing](https://doc.qt.io/qt-6/licensing.html), [source](https://code.qt.io/cgit/pyside/pyside-setup.git/) | Core, Gui, Widgets and runtime dependencies; release installer uses Essentials rather than the all-modules metapackage |
-| FFprobe / FFmpeg | [FFmpeg legal information](https://www.ffmpeg.org/legal.html), [source](https://git.ffmpeg.org/ffmpeg.git) | Separate bundled command-line executable; inspect the exact build configuration and linked libraries |
+| FFprobe / FFmpeg | [FFmpeg legal information](https://www.ffmpeg.org/legal.html), [source](https://git.ffmpeg.org/ffmpeg.git) | Separate bundled command-line executables for metadata and frame images; inspect both exact build configurations and linked libraries |
 | Gyan FFmpeg Windows build | [Build information and source links](https://www.gyan.dev/ffmpeg/builds/) | Upstream describes its Windows builds as GPLv3; this must not be mislabeled LGPL-only |
 | ExifTool and Windows runtime | [License and source](https://exiftool.org/) | Same terms as Perl; include the accompanying Windows runtime and its notices |
 | tzdata | [IANA timezone database](https://www.iana.org/time-zones), [Python package source](https://github.com/python/tzdata) | Timezone rules for systems without a timezone database |

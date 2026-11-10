@@ -14,10 +14,10 @@ def run_self_test(result_path, media_path):
         from app.gui.main_window import MainWindow
         from app.core.session_report import write_session_report, read_session_report
         import tempfile
-        ffprobe, exiftool = _bundled_tool('ffprobe'), _bundled_tool('exiftool')
-        if not ffprobe or not exiftool:
+        ffprobe, exiftool, ffmpeg = _bundled_tool('ffprobe'), _bundled_tool('exiftool'), _bundled_tool('ffmpeg')
+        if not ffprobe or not exiftool or not ffmpeg:
             raise RuntimeError('Packaged media tools not found')
-        result['bundled_tools'] = {'ffprobe': Path(ffprobe).name, 'exiftool': Path(exiftool).name}
+        result['bundled_tools'] = {'ffprobe': Path(ffprobe).name, 'exiftool': Path(exiftool).name, 'ffmpeg': Path(ffmpeg).name}
         for name, tool, flag in [('ffprobe', ffprobe, '-version'), ('exiftool', exiftool, '-ver')]:
             result[name + '_version'] = subprocess.check_output([tool, flag], timeout=30, text=True,
                 encoding='utf-8', errors='replace').splitlines()[0]
@@ -32,6 +32,22 @@ def run_self_test(result_path, media_path):
         window._scan_completed([video])
         if window.table.rowCount() != 1:
             raise RuntimeError('GUI did not display synthetic clip')
+        from PySide6.QtCore import QEventLoop, QTimer
+        loop = QEventLoop()
+        frames = []
+        def frame_ready(_token, image, _message):
+            frames.append(not image.isNull())
+            loop.quit()
+        window.timeline_preview.service.ready.connect(frame_ready)
+        timeout = QTimer()
+        timeout.setSingleShot(True)
+        timeout.timeout.connect(loop.quit)
+        timeout.start(20000)
+        loop.exec()
+        timeout.stop()
+        if not frames or not all(frames):
+            raise RuntimeError('Packaged thumbnail decoder did not produce a frame')
+        result['thumbnail_decoded'] = True
         with tempfile.TemporaryDirectory() as directory:
             report = Path(directory) / 'session.json'
             write_session_report(report, [video])
