@@ -82,4 +82,5 @@ their redistribution terms, not an invented corresponding-source requirement.
 The draft-release helper rejects an incomplete/mismatched review, missing groups,
 or altered files. It checks evidence consistency; a maintainer still must review
 whether those materials satisfy the applicable license terms. It does not certify
-legal sufficiency. Keep public binary uploads disabled until that review passes.
+legal sufficiency. Experimental build artifacts are available while this review is
+pending; complete the review before publishing a versioned release.
